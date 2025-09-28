@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Calendar, Filter, Search, X } from "lucide-react";
 import {
   Select,
@@ -35,9 +34,9 @@ export function BookingSearchFilters({
   onDateChange,
 }: BookingSearchFiltersProps) {
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center">
       {/* Search bar */}
-      <div className="relative">
+      <div className="relative flex-1 min-w-0">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           placeholder="Tìm kiếm theo ID booking, biển số xe, model, thương hiệu..."
@@ -58,7 +57,7 @@ export function BookingSearchFilters({
       </div>
 
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center lg:flex-shrink-0">
         <div className="flex items-center gap-2">
           <Filter className="h-4 w-4" />
           <span className="text-sm font-medium">Trạng thái:</span>

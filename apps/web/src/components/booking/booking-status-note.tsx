@@ -1,28 +1,39 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { AlertCircle } from "lucide-react";
-import { BookingStatus } from "@packages";
+import { BookingStatus, Booking } from "@packages";
 
 interface BookingStatusNoteProps {
   status: BookingStatus;
+  booking?: Booking; // Optional để check thời gian active
 }
 
-export function BookingStatusNote({ status }: BookingStatusNoteProps) {
-  // Chỉ hiển thị note cho trạng thái Pending
-  if (status !== BookingStatus.Pending) {
-    return null;
+export function BookingStatusNote({ status, booking }: BookingStatusNoteProps) {
+  // Note cho Pending
+  if (status === BookingStatus.Pending) {
+    return (
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+        <p className="text-sm text-blue-800 font-medium">
+          📍 Nhớ mang theo CMND/CCCD và bằng lái xe khi đến lấy xe
+        </p>
+      </div>
+    );
   }
 
-  return (
-    <Card className="bg-blue-50 border-blue-200">
-      <CardContent className="p-4">
-        <div className="flex items-center gap-2">
-          <AlertCircle className="h-5 w-5 text-blue-600" />
-          <h3 className="font-medium text-blue-900">Chuyến đi sắp tới</h3>
+  // Note cho Confirmed nếu đang active
+  if (status === BookingStatus.Confirmed && booking) {
+    const isActive =
+      new Date(booking.startTime) <= new Date() &&
+      new Date(booking.endTime) > new Date();
+
+    if (isActive) {
+      return (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+          <p className="text-sm text-green-800 font-medium">
+            ✅ Đang trong thời gian thuê xe
+          </p>
         </div>
-        <p className="text-sm text-blue-800 mt-1">
-          Nhớ mang theo CMND/CCCD và bằng lái xe khi đến lấy xe
-        </p>
-      </CardContent>
-    </Card>
-  );
+      );
+    }
+  }
+
+  // Không hiển thị note cho các trạng thái khác
+  return null;
 }

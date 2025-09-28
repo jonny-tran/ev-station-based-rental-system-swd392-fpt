@@ -9,9 +9,10 @@ import {
   toLocal,
 } from "@packages";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, MapPin, Clock, Car, Eye } from "lucide-react";
+import { BookingStatusBadge } from "@/components/booking/booking-status-badge";
+import { BookingStatusNote } from "@/components/booking/booking-status-note";
 
 interface BookingCardProps {
   booking: Booking;
@@ -20,53 +21,15 @@ interface BookingCardProps {
   onViewDetails: (bookingId: string) => void;
 }
 
-const getStatusColor = (status: BookingStatus) => {
-  switch (status) {
-    case BookingStatus.Pending:
-      return "bg-yellow-100 text-yellow-800 border-yellow-200";
-    case BookingStatus.Confirmed:
-      return "bg-green-100 text-green-800 border-green-200";
-    case BookingStatus.Completed:
-      return "bg-blue-100 text-blue-800 border-blue-200";
-    case BookingStatus.Cancelled:
-      return "bg-red-100 text-red-800 border-red-200";
-    case BookingStatus.Expired:
-      return "bg-gray-100 text-gray-800 border-gray-200";
-    default:
-      return "bg-gray-100 text-gray-800 border-gray-200";
-  }
-};
-
-const getStatusText = (status: BookingStatus) => {
-  switch (status) {
-    case BookingStatus.Pending:
-      return "Chờ xác nhận";
-    case BookingStatus.Confirmed:
-      return "Đã xác nhận";
-    case BookingStatus.Completed:
-      return "Hoàn thành";
-    case BookingStatus.Cancelled:
-      return "Đã hủy";
-    case BookingStatus.Expired:
-      return "Hết hạn";
-    default:
-      return status;
-  }
-};
-
 export function BookingCard({
   booking,
   vehicle,
   rentalLocation,
   onViewDetails,
 }: BookingCardProps) {
-  // Logic cho button style và notes
+  // Logic cho button style
   const shouldHighlightButton =
     booking.bookingStatus === BookingStatus.Pending ||
-    booking.bookingStatus === BookingStatus.Confirmed;
-
-  const shouldShowPendingNote = booking.bookingStatus === BookingStatus.Pending;
-  const shouldShowActiveNote =
     booking.bookingStatus === BookingStatus.Confirmed;
 
   return (
@@ -76,11 +39,7 @@ export function BookingCard({
           <CardTitle className="text-lg font-semibold">
             {vehicle.brand} {vehicle.model}
           </CardTitle>
-          <Badge
-            className={`${getStatusColor(booking.bookingStatus)} font-medium`}
-          >
-            {getStatusText(booking.bookingStatus)}
-          </Badge>
+          <BookingStatusBadge status={booking.bookingStatus} />
         </div>
         <p className="text-sm text-muted-foreground">
           Biển số: {vehicle.licensePlate}
@@ -158,21 +117,7 @@ export function BookingCard({
         </div>
 
         {/* Thông báo đặc biệt */}
-        {shouldShowPendingNote && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-            <p className="text-sm text-blue-800 font-medium">
-              📍 Nhớ mang theo CMND/CCCD và bằng lái xe khi đến lấy xe
-            </p>
-          </div>
-        )}
-
-        {shouldShowActiveNote && (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-            <p className="text-sm text-green-800 font-medium">
-              ✅ Đang trong thời gian thuê xe
-            </p>
-          </div>
-        )}
+        <BookingStatusNote status={booking.bookingStatus} booking={booking} />
       </CardContent>
     </Card>
   );

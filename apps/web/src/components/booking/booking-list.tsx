@@ -1,4 +1,4 @@
-import { Booking, Vehicle, RentalLocation, BookingStatus } from "@packages";
+import { Booking, Vehicle, RentalLocation } from "@packages";
 import { BookingCard } from "@/components/booking/booking-card";
 
 interface BookingListProps {
