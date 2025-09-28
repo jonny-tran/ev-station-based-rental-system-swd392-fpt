@@ -2,6 +2,7 @@ import { AccountStatus, UserRole } from "./enum";
 
 export interface Account {
   accountId: string;
+  fullName: string;
   email: string;
   phoneNumber: string;
   avatarUrl: string;

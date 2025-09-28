@@ -28,6 +28,8 @@ export enum BookingStatus {
   Pending = "Pending",
   Confirmed = "Confirmed",
   Cancelled = "Cancelled",
+  Expired = "Expired",
+  Completed = "Completed",
 }
 
 export enum ContractStatus {
