@@ -1,13 +1,13 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import { StaffSidebar } from "@/components/sidebar/staff-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { PageHeader } from "@/components/sidebar/page-header";
 
 export default function StaffCheckinSessionPage() {
-  const searchParams = useSearchParams();
-  const bookingId = searchParams.get("bookingId");
+  const params = useParams();
+  const bookingId = params.bookingId as string;
 
   return (
     <SidebarProvider>
