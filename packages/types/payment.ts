@@ -7,9 +7,9 @@ export interface Payment {
   currency: string;
   paymentType: PaymentType;
   paymentMethod: PaymentMethod;
-  transactionId: string;
-  refundTransactionId: string;
-  receiptUrl: string;
-  paidAt: string;
+  transactionId?: string; // có thể không có khi thanh toán tiền mặt
+  refundTransactionId?: string;
+  receiptUrl?: string; // có thể không có khi cash
+  paidAt?: string;
   status: PaymentStatus;
 }

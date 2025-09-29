@@ -15,4 +15,7 @@ export interface Vehicle {
   lastServiceDate: string;
   createdAt: string;
   updatedAt: string;
+  color?: string;
+  imageUrl?: string;
+  rentalRate?: number;
 }

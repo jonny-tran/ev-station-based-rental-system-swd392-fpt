@@ -3,7 +3,11 @@ import { Vehicle } from "../types/vehicle";
 import { Renter } from "../types/renter";
 import { Account } from "../types/account";
 import { RentalLocation } from "../types/rentalLocation";
+import { VehicleInspection } from "../types/vehicleInspection";
 import { mockData } from "./mock-data";
+import { DriverLicense } from "../types/driverLicense";
+import { Contract } from "../types/contract";
+import { Payment } from "../types/payment";
 
 // mockData được tách sang ./mock-data
 
@@ -44,6 +48,48 @@ export const mockService = {
   // Lấy tất cả địa điểm thuê
   getAllRentalLocations: (): RentalLocation[] => {
     return mockData.rentalLocations;
+  },
+
+  // Lấy tất cả vehicle inspections
+  getAllVehicleInspections: (): VehicleInspection[] => {
+    return mockData.vehicleInspections;
+  },
+
+  // Lấy vehicle inspection theo ID
+  getVehicleInspectionById: (
+    inspectionId: string
+  ): VehicleInspection | undefined => {
+    return mockData.vehicleInspections.find(
+      (inspection) => inspection.inspectionId === inspectionId
+    );
+  },
+
+  // Lấy vehicle inspections theo staff ID
+  getVehicleInspectionsByStaffId: (staffId: string): VehicleInspection[] => {
+    return mockData.vehicleInspections.filter(
+      (inspection) => inspection.staffId === staffId
+    );
+  },
+
+  // Lấy driver license theo renterId
+  getDriverLicenseByRenterId: (renterId: string): DriverLicense | undefined => {
+    return mockData.driverLicenses.find(
+      (license) => license.renterId === renterId
+    );
+  },
+
+  // Contracts
+  getContractById: (contractId: string): Contract | undefined => {
+    return mockData.contracts?.find(
+      (c: Contract) => c.contractId === contractId
+    );
+  },
+
+  // Payments
+  getPaymentsByContractId: (contractId: string): Payment[] => {
+    return (mockData.payments as Payment[]).filter(
+      (p) => p.contractId === contractId
+    );
   },
 };
 

@@ -9,8 +9,8 @@ export interface Contract {
   createdAt: string;
   updatedAt: string;
   status: ContractStatus;
-  signedAt: string;
+  signedAt?: string; // có thể chưa ký
   signedByRenter: boolean;
   signedByStaff: boolean;
-  voidedAt: string;
+  voidedAt?: string;
 }

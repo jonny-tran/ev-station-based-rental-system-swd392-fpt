@@ -3,6 +3,10 @@ import { Vehicle } from "../types/vehicle";
 import { Renter } from "../types/renter";
 import { Account } from "../types/account";
 import { RentalLocation } from "../types/rentalLocation";
+import { VehicleInspection } from "../types/vehicleInspection";
+import { Contract } from "../types/contract";
+import { Payment } from "../types/payment";
+import { DriverLicense } from "../types/driverLicense";
 
 // Mock data từ db.json
 export const mockData = {
@@ -195,6 +199,46 @@ export const mockData = {
     },
   ] as Renter[],
 
+  // Driver Licenses
+  driverLicenses: [
+    // Case I: Verified
+    {
+      driverLicenseId: "dl-1",
+      renterId: "r-1",
+      licenseNumber: "B2-123456789",
+      issueDate: "2022-06-01",
+      expiryDate: "2032-06-01",
+      issuedBy: "Sở GTVT TP.HCM",
+      licenseImageUrl: "https://mock.cloudinary.com/license-verified.jpg",
+      verifiedStatus: "Verified",
+      verifiedAt: "2025-09-27T08:00:00Z",
+    },
+    // Case II: Pending
+    {
+      driverLicenseId: "dl-2",
+      renterId: "r-1",
+      licenseNumber: "A1-987654321",
+      issueDate: "2020-01-10",
+      expiryDate: "2030-01-10",
+      issuedBy: "Sở GTVT TP.HCM",
+      licenseImageUrl: "https://mock.cloudinary.com/license-pending.jpg",
+      verifiedStatus: "Pending",
+      verifiedAt: "2025-09-27T09:00:00Z",
+    },
+    // Case III: Rejected
+    {
+      driverLicenseId: "dl-3",
+      renterId: "r-1",
+      licenseNumber: "A1-111222333",
+      issueDate: "2019-03-05",
+      expiryDate: "2029-03-05",
+      issuedBy: "Sở GTVT TP.HCM",
+      licenseImageUrl: "https://mock.cloudinary.com/license-rejected.jpg",
+      verifiedStatus: "Rejected",
+      verifiedAt: "2025-09-27T10:00:00Z",
+    },
+  ] as DriverLicense[],
+
   // Mock rental locations
   rentalLocations: [
     {
@@ -225,4 +269,322 @@ export const mockData = {
       openingHours: "7:00 - 22:00",
     },
   ] as RentalLocation[],
+
+  vehicleInspections: [
+    // Case 1: Check-in Pending – step 1 (license review)
+    {
+      inspectionId: "insp-ci-1",
+      bookingId: "b-2",
+      staffId: "a-2",
+      inspectionType: "CheckIn",
+      inspectionAt: "2025-09-28T08:00:00Z",
+      photoUrls: [],
+      currentStep: 1,
+      createdAt: "2025-09-28T08:00:00Z",
+      updatedAt: "2025-09-28T08:00:00Z",
+      status: "Pending",
+    },
+
+    // Case 2: Check-in Rejected (step 1) – thiếu giấy tờ
+    {
+      inspectionId: "insp-ci-2",
+      bookingId: "b-1",
+      staffId: "a-2",
+      inspectionType: "CheckIn",
+      inspectionAt: "2025-09-28T08:30:00Z",
+      photoUrls: [],
+      currentStep: 1,
+      createdAt: "2025-09-28T08:20:00Z",
+      updatedAt: "2025-09-28T08:30:00Z",
+      status: "Rejected",
+      rejectedReason: "Thiếu giấy tờ/CCCD không trùng khớp",
+    },
+
+    // Case 3: Check-in Pending (step 2) – đang làm checklist
+    {
+      inspectionId: "insp-ci-3",
+      bookingId: "b-4",
+      staffId: "a-2",
+      inspectionType: "CheckIn",
+      inspectionAt: "2025-09-28T09:00:00Z",
+      odometerKm: 1910,
+      batteryLevel: 92,
+      vehicleConditionNotes: "Đang kiểm tra xe, chờ đủ ảnh",
+      photoUrls: ["https://mock.cloudinary.com/ci-step2-1.jpg"],
+      currentStep: 2,
+      createdAt: "2025-09-28T08:50:00Z",
+      updatedAt: "2025-09-28T09:00:00Z",
+      status: "Pending",
+    },
+
+    // Case 4: Check-in Rejected (step 2) – hủy booking do hư hỏng
+    {
+      inspectionId: "insp-ci-4",
+      bookingId: "b-5",
+      staffId: "a-2",
+      inspectionType: "CheckIn",
+      inspectionAt: "2025-09-28T09:30:00Z",
+      odometerKm: 5205,
+      batteryLevel: 28,
+      vehicleConditionNotes: "Phát hiện hư hỏng nặng",
+      damageNotes: "Vỡ gương + trầy đầu xe",
+      photoUrls: [
+        "https://mock.cloudinary.com/ci-step2-damage-1.jpg",
+        "https://mock.cloudinary.com/ci-step2-damage-2.jpg",
+      ],
+      currentStep: 2,
+      createdAt: "2025-09-28T09:20:00Z",
+      updatedAt: "2025-09-28T09:30:00Z",
+      status: "Rejected",
+      rejectedReason: "Xe hư hỏng, hủy booking",
+    },
+
+    // Case 5: Check-in Pending (step 3) – contract waiting signature
+    {
+      inspectionId: "insp-ci-5",
+      bookingId: "b-2",
+      contractId: "contract-waiting-signature",
+      staffId: "a-2",
+      inspectionType: "CheckIn",
+      inspectionAt: "2025-09-28T10:00:00Z",
+      photoUrls: ["https://mock.cloudinary.com/ci-step3-1.jpg"],
+      currentStep: 3,
+      createdAt: "2025-09-28T09:50:00Z",
+      updatedAt: "2025-09-28T10:00:00Z",
+      status: "Pending",
+      subStatus: "WaitingSignature",
+    },
+
+    // Case 6: Check-in Rejected (step 3) – contract voided
+    {
+      inspectionId: "insp-ci-6",
+      bookingId: "b-1",
+      contractId: "contract-voided",
+      staffId: "a-2",
+      inspectionType: "CheckIn",
+      inspectionAt: "2025-09-28T10:30:00Z",
+      photoUrls: ["https://mock.cloudinary.com/ci-step3-voided.jpg"],
+      currentStep: 3,
+      createdAt: "2025-09-28T10:20:00Z",
+      updatedAt: "2025-09-28T10:30:00Z",
+      status: "Rejected",
+      rejectedReason: "Hợp đồng bị void khi ký",
+    },
+
+    // Case 7: Check-in Pending (step 4) – chờ payment
+    {
+      inspectionId: "insp-ci-7",
+      bookingId: "b-4",
+      contractId: "contract-active-1",
+      staffId: "a-2",
+      inspectionType: "CheckIn",
+      inspectionAt: "2025-09-28T11:00:00Z",
+      photoUrls: ["https://mock.cloudinary.com/ci-step4-1.jpg"],
+      currentStep: 4,
+      createdAt: "2025-09-28T10:50:00Z",
+      updatedAt: "2025-09-28T11:00:00Z",
+      status: "Pending",
+      subStatus: "WaitingPayment",
+    },
+
+    // Case 8: Check-in Approved (done)
+    {
+      inspectionId: "insp-ci-8",
+      bookingId: "b-2",
+      contractId: "contract-active-2",
+      staffId: "a-2",
+      inspectionType: "CheckIn",
+      inspectionAt: "2025-09-28T11:30:00Z",
+      odometerKm: 865,
+      batteryLevel: 70,
+      vehicleConditionNotes: "Hoàn tất, đã thanh toán",
+      photoUrls: ["https://mock.cloudinary.com/ci-done.jpg"],
+      currentStep: 4,
+      createdAt: "2025-09-28T11:20:00Z",
+      updatedAt: "2025-09-28T11:30:00Z",
+      status: "Approved",
+    },
+
+    // Case 9: Check-out Pending – step 2
+    {
+      inspectionId: "insp-co-1",
+      bookingId: "b-3",
+      contractId: "contract-completed-1",
+      staffId: "a-2",
+      inspectionType: "CheckOut",
+      inspectionAt: "2025-09-28T18:00:00Z",
+      odometerKm: 3490,
+      batteryLevel: 22,
+      vehicleConditionNotes: "Chuẩn bị trả xe, chờ xác nhận",
+      photoUrls: ["https://mock.cloudinary.com/co-step2-1.jpg"],
+      currentStep: 2,
+      createdAt: "2025-09-28T17:50:00Z",
+      updatedAt: "2025-09-28T18:00:00Z",
+      status: "Pending",
+    },
+
+    // Case 10: Check-out Approved – hoàn tất
+    {
+      inspectionId: "insp-co-2",
+      bookingId: "b-3",
+      contractId: "contract-completed-1",
+      staffId: "a-2",
+      inspectionType: "CheckOut",
+      inspectionAt: "2025-09-28T18:30:00Z",
+      odometerKm: 3500,
+      batteryLevel: 20,
+      vehicleConditionNotes: "Đã kiểm tra, hoàn tất trả xe",
+      photoUrls: ["https://mock.cloudinary.com/co-done.jpg"],
+      currentStep: 2,
+      createdAt: "2025-09-28T18:10:00Z",
+      updatedAt: "2025-09-28T18:30:00Z",
+      status: "Approved",
+    },
+  ] as VehicleInspection[],
+
+  // Contracts
+  contracts: [
+    // Case α: Draft contract (chưa ký)
+    {
+      contractId: "contract-alpha-draft",
+      bookingId: "b-2",
+      termsAndConditions: "Điều khoản mẫu...",
+      startDate: "2025-10-01",
+      endDate: "2025-10-01",
+      createdAt: "2025-09-27T12:00:00Z",
+      updatedAt: "2025-09-27T12:00:00Z",
+      status: "Draft",
+      signedByRenter: false,
+      signedByStaff: false,
+    },
+    // Case β: Active contract (cả hai bên ký xong)
+    {
+      contractId: "contract-active-1",
+      bookingId: "b-4",
+      termsAndConditions: "Điều khoản thuê xe...",
+      startDate: "2025-10-05",
+      endDate: "2025-10-05",
+      createdAt: "2025-09-28T11:00:00Z",
+      updatedAt: "2025-09-28T11:00:00Z",
+      status: "Active",
+      signedAt: "2025-09-28T10:58:00Z",
+      signedByRenter: true,
+      signedByStaff: true,
+    },
+    // Case β (khác): Active contract (cho Case 8)
+    {
+      contractId: "contract-active-2",
+      bookingId: "b-2",
+      termsAndConditions: "Điều khoản thuê xe...",
+      startDate: "2025-10-01",
+      endDate: "2025-10-01",
+      createdAt: "2025-09-28T11:20:00Z",
+      updatedAt: "2025-09-28T11:20:00Z",
+      status: "Active",
+      signedAt: "2025-09-28T11:20:00Z",
+      signedByRenter: true,
+      signedByStaff: true,
+    },
+    // Case γ: Voided contract (bị hủy trong lúc ký)
+    {
+      contractId: "contract-voided",
+      bookingId: "b-1",
+      termsAndConditions: "Điều khoản mẫu...",
+      startDate: "2025-09-28",
+      endDate: "2025-09-28",
+      createdAt: "2025-09-28T10:00:00Z",
+      updatedAt: "2025-09-28T10:20:00Z",
+      status: "Voided",
+      signedByRenter: true,
+      signedByStaff: false,
+      voidedAt: "2025-09-28T10:25:00Z",
+    },
+    // Case δ: Completed contract (đã kết thúc thuê xe)
+    {
+      contractId: "contract-completed-1",
+      bookingId: "b-3",
+      termsAndConditions: "Điều khoản hoàn tất...",
+      startDate: "2025-09-20",
+      endDate: "2025-09-20",
+      createdAt: "2025-09-20T09:00:00Z",
+      updatedAt: "2025-09-28T18:30:00Z",
+      status: "Completed",
+      signedAt: "2025-09-20T09:05:00Z",
+      signedByRenter: true,
+      signedByStaff: true,
+    },
+    // Case 5 hỗ trợ: waiting signature (renter ký trước)
+    {
+      contractId: "contract-waiting-signature",
+      bookingId: "b-2",
+      termsAndConditions: "Điều khoản mẫu...",
+      startDate: "2025-10-01",
+      endDate: "2025-10-01",
+      createdAt: "2025-09-28T09:55:00Z",
+      updatedAt: "2025-09-28T10:00:00Z",
+      status: "Draft",
+      signedByRenter: true,
+      signedByStaff: false,
+    },
+  ] as Contract[],
+
+  // Payments
+  payments: [
+    // Case i: Pending (chưa thanh toán) – cho Case 7
+    {
+      paymentId: "pay-pending-1",
+      contractId: "contract-active-1",
+      amount: 550000,
+      currency: "VND",
+      paymentType: "RentalFee",
+      paymentMethod: "VNPay",
+      status: "Pending",
+    },
+    // Case ii: Paid (VNPay) – cho Case 8
+    {
+      paymentId: "pay-paid-vnpay-1",
+      contractId: "contract-active-2",
+      amount: 400000,
+      currency: "VND",
+      paymentType: "RentalFee",
+      paymentMethod: "VNPay",
+      transactionId: "vnpay-20250928-0001",
+      paidAt: "2025-09-28T11:25:00Z",
+      status: "Paid",
+    },
+    // Case iii: Paid (Cash)
+    {
+      paymentId: "pay-paid-cash-1",
+      contractId: "contract-completed-1",
+      amount: 450000,
+      currency: "VND",
+      paymentType: "RentalFee",
+      paymentMethod: "Cash",
+      paidAt: "2025-09-28T18:25:00Z",
+      status: "Paid",
+    },
+    // Case iv: Failed (VNPay lỗi)
+    {
+      paymentId: "pay-failed-vnpay-1",
+      contractId: "contract-active-1",
+      amount: 550000,
+      currency: "VND",
+      paymentType: "RentalFee",
+      paymentMethod: "VNPay",
+      transactionId: "vnpay-20250928-ERR",
+      status: "Failed",
+    },
+    // Case v: Refunded (khi booking bị hủy)
+    {
+      paymentId: "pay-refund-1",
+      contractId: "contract-voided",
+      amount: 300000,
+      currency: "VND",
+      paymentType: "Deposit",
+      paymentMethod: "VNPay",
+      transactionId: "vnpay-20250928-REF",
+      paidAt: "2025-09-28T10:10:00Z",
+      status: "Refunded",
+    },
+  ] as Payment[],
 };

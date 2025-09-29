@@ -6,4 +6,6 @@ export interface RentalLocation {
   country: string;
   contactNumber: string;
   openingHours: string;
+  latitude?: number;
+  longitude?: number;
 }

@@ -69,3 +69,30 @@ export enum PaymentStatus {
   Failed = "Failed",
   Refunded = "Refunded",
 }
+
+// Check-in session flow
+export enum CheckInStep {
+  ReviewLicense = 1,
+  HandoverChecklist = 2,
+  SignContract = 3,
+  Payment = 4,
+}
+
+export enum CheckInSessionStatus {
+  Pending = "Pending",
+  Approved = "Approved",
+  Rejected = "Rejected",
+}
+
+// Sub-status để giữ ngữ cảnh khi ở Step 3 (ký hợp đồng)
+export enum CheckInSessionSubStatus {
+  None = "None",
+  WaitingSignature = "WaitingSignature",
+}
+
+// Kết quả review nhanh ở Step 1
+export enum DriverLicenseReviewStatus {
+  Pending = "Pending",
+  Approved = "Approved",
+  Rejected = "Rejected",
+}
