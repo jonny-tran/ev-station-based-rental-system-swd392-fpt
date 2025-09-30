@@ -6,13 +6,13 @@ import { StaffSidebar } from "@/components/sidebar/staff-sidebar";
 import { PageHeader } from "@/components/sidebar/page-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import { ConfirmRejectButton } from "@/components/staff/check-in/process/ConfirmRejectButton";
+import { ConfirmRejectButton } from "@/components/staff/check-in/common/ConfirmRejectButton";
 import { mockService } from "@/packages/services/mock-service";
 import Link from "next/link";
-import { StepIndicator } from "@/components/staff/check-in/process/StepIndicator";
+import { StepIndicator } from "@/components/staff/check-in/common/StepIndicator";
 import { RenterInfoCard } from "@/components/staff/check-in/process/step1/RenterInfoCard";
 import { DriverLicenseCard } from "@/components/staff/check-in/process/step1/DriverLicenseCard";
-import { RejectNote } from "@/components/staff/check-in/process/RejectNote";
+import { RejectNote } from "@/components/staff/check-in/common/RejectNote";
 
 type VerifiedStatus = "Verified" | "Pending" | "Rejected";
 

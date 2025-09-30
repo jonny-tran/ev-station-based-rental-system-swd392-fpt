@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { StaffSidebar } from "@/components/sidebar/staff-sidebar";
 import { PageHeader } from "@/components/sidebar/page-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { StepIndicator } from "@/components/staff/check-in/process/StepIndicator";
+import { StepIndicator } from "@/components/staff/check-in/common/StepIndicator";
 import { mockService } from "@/packages/services/mock-service";
 import { VehicleSummaryCard } from "@/components/staff/check-in/process/step2/VehicleSummaryCard";
 import {
@@ -17,7 +17,7 @@ import {
   VehicleInputValues,
 } from "@/components/staff/check-in/process/step2/VehicleInputs";
 import { ActionsBar } from "@/components/staff/check-in/process/step2/ActionsBar";
-import { RejectNote } from "@/components/staff/check-in/process/RejectNote";
+import { RejectNote } from "@/components/staff/check-in/common/RejectNote";
 
 export default function InspectionStep2Page() {
   const params = useParams();

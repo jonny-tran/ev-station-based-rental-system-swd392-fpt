@@ -24,6 +24,15 @@
       "@packages": ["../../packages"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "../../packages/contract/contract-template.ts",
+    "../../packages/contract/contract-types.ts",
+    "../../packages/contract/contract-generator.ts",
+    "../../packages/contract/contract-data-service.ts"
+  ],
   "exclude": ["node_modules"]
 }

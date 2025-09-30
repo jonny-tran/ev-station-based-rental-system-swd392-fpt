@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ConfirmRejectButton } from "@/components/staff/check-in/process/ConfirmRejectButton";
+import { ConfirmRejectButton } from "@/components/staff/check-in/common/ConfirmRejectButton";
 
 export function ActionsBar({
   canContinue,
