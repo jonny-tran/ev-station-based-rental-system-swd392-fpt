@@ -41,13 +41,10 @@ export function PaymentMethods({
   const onConfirm = () => {
     // UI-only: giả lập thành công và chuyển hướng sang result
     const params = new URLSearchParams();
-    params.set("inspectionId", inspectionId);
-    if (contractId) params.set("contractId", contractId);
     params.set("method", method);
     params.set("status", "success");
-    router.push(
-      `/staff/checkin-session/${inspectionId}/step4/payment-result?${params.toString()}`
-    );
+    params.set("return", "/staff/checkin-session");
+    router.push(`/staff/payment-result?${params.toString()}`);
   };
 
   return (

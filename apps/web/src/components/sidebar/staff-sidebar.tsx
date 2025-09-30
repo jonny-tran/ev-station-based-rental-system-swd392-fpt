@@ -6,8 +6,6 @@ import {
   LayoutDashboard,
   QrCode,
   Car,
-  Calendar,
-  History,
   FileText,
   CheckCircle,
 } from "lucide-react";
@@ -49,22 +47,10 @@ const getStaffNavItems = (pathname: string) => [
     isActive: pathname.startsWith("/staff/contract"),
   },
   {
-    title: "Trả xe",
+    title: "Quản lý xe trả",
     url: "/staff/return",
     icon: Car,
     isActive: pathname.startsWith("/staff/return"),
-  },
-  {
-    title: "Lịch sử đặt xe",
-    url: "/staff/booking",
-    icon: Calendar,
-    isActive: pathname.startsWith("/staff/booking"),
-  },
-  {
-    title: "Lịch sử giao - nhận",
-    url: "/staff/history",
-    icon: History,
-    isActive: pathname.startsWith("/staff/history"),
   },
 ];
 

@@ -9,6 +9,12 @@ import { DriverLicense } from "../types/driverLicense";
 import { Contract } from "../types/contract";
 import { Payment } from "../types/payment";
 import { ContractStatus } from "../types/enum";
+import {
+  SettlementConfig,
+  SettlementInput,
+  SettlementResult,
+} from "../types/settlement";
+import { computeSettlement } from "../utils/settlement-calculator";
 
 // mockData được tách sang ./mock-data
 
@@ -247,6 +253,89 @@ export const mockService = {
     return (mockData.payments as Payment[]).filter(
       (p) => p.contractId === contractId
     );
+  },
+
+  getPaymentById: (paymentId: string): Payment | undefined => {
+    return (mockData.payments as Payment[]).find(
+      (p) => p.paymentId === paymentId
+    );
+  },
+
+  // ====== Returns / Check-out helpers ======
+  updateCheckoutInspection: (
+    inspectionId: string,
+    payload: Partial<
+      Pick<
+        VehicleInspection,
+        | "odometerKm"
+        | "batteryLevel"
+        | "vehicleConditionNotes"
+        | "damageNotes"
+        | "photoUrls"
+      >
+    >
+  ): VehicleInspection | undefined => {
+    const insp = mockData.vehicleInspections.find(
+      (i) => i.inspectionId === inspectionId
+    );
+    if (!insp) return undefined;
+    if (insp.inspectionType !== "CheckOut") return insp;
+    Object.assign(insp, payload);
+    insp.updatedAt = new Date().toISOString();
+    return insp;
+  },
+
+  computeSettlementForReturn: (
+    input: SettlementInput,
+    config: SettlementConfig
+  ): SettlementResult => {
+    return computeSettlement(input, config);
+  },
+
+  createExtraChargePayment: (params: {
+    contractId: string;
+    amount: number;
+    method: "VNPay" | "Cash";
+  }): Payment => {
+    const payment: Payment = {
+      paymentId: `pay-${Date.now()}`,
+      contractId: params.contractId,
+      amount: params.amount,
+      currency: "VND",
+      paymentType: "Penalty",
+      paymentMethod: params.method,
+      status: params.method === "Cash" ? "Paid" : "Pending",
+      paidAt: params.method === "Cash" ? new Date().toISOString() : undefined,
+    } as Payment;
+    (mockData.payments as Payment[]).push(payment);
+    return payment;
+  },
+
+  confirmVNPayPayment: (
+    paymentId: string,
+    ok: boolean,
+    transactionId?: string
+  ): Payment | undefined => {
+    const p = (mockData.payments as Payment[]).find(
+      (x) => x.paymentId === paymentId
+    );
+    if (!p) return undefined;
+    if (p.paymentMethod !== "VNPay") return p;
+    p.status = ok ? "Paid" : "Failed";
+    p.paidAt = ok ? new Date().toISOString() : p.paidAt;
+    p.transactionId = transactionId || p.transactionId;
+    return p;
+  },
+
+  finalizeReturn: (inspectionId: string): VehicleInspection | undefined => {
+    const insp = mockData.vehicleInspections.find(
+      (i) => i.inspectionId === inspectionId
+    );
+    if (!insp) return undefined;
+    if (insp.inspectionType !== "CheckOut") return insp;
+    insp.status = "Approved";
+    insp.updatedAt = new Date().toISOString();
+    return insp;
   },
 };
 

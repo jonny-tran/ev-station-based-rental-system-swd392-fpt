@@ -10,9 +10,11 @@ export * from "./types/renter";
 export * from "./types/rentalLocation";
 export * from "./types/vehicle";
 export * from "./types/vehicleInspection";
+export * from "./types/settlement";
 
 // Export tất cả services
 export * from "./services/mock-service";
 
 // Export tất cả utils
 export * from "./utils/datetime";
+export * from "./utils/settlement-calculator";
