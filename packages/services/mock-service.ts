@@ -147,6 +147,55 @@ export const mockService = {
     return { items: paged, total, page, pageSize };
   },
 
+  // Lấy danh sách hợp đồng cho Renter (lọc theo booking thuộc renter)
+  getContractsForRenter: (
+    renterId: string,
+    params?: {
+      page?: number;
+      pageSize?: number;
+      status?: ContractStatus | "All";
+      keyword?: string;
+    }
+  ): { items: Contract[]; total: number; page: number; pageSize: number } => {
+    const {
+      page = 1,
+      pageSize = 10,
+      status = "All",
+      keyword = "",
+    } = params || {};
+
+    // Lấy bookingId thuộc renter
+    const renterBookingIds = mockData.bookings
+      .filter((b) => b.renterId === renterId)
+      .map((b) => b.bookingId);
+
+    let items = (mockData.contracts as Contract[]).filter((c) =>
+      renterBookingIds.includes(c.bookingId)
+    );
+
+    // Không hiển thị Draft cho Renter
+    items = items.filter((c) => c.status !== ContractStatus.Draft);
+
+    // Filter theo status nếu có
+    if (status !== "All") {
+      items = items.filter((c) => c.status === status);
+    }
+
+    // Search theo contractId/bookingId
+    const q = keyword.trim().toLowerCase();
+    if (q) {
+      items = items.filter((c) =>
+        [c.contractId, c.bookingId].some((v) => v.toLowerCase().includes(q))
+      );
+    }
+
+    const total = items.length;
+    const start = (page - 1) * pageSize;
+    const end = start + pageSize;
+    const paged = items.slice(start, end);
+    return { items: paged, total, page, pageSize };
+  },
+
   // Staff ký hợp đồng
   signContractByStaff: (contractId: string): Contract | undefined => {
     const contract = mockData.contracts.find(
@@ -166,6 +215,29 @@ export const mockService = {
       } else if (contract.status === ContractStatus.Active) {
         contract.status = ContractStatus.Completed;
       }
+    }
+    return contract;
+  },
+
+  // Renter ký hợp đồng
+  signContractByRenter: (contractId: string): Contract | undefined => {
+    const contract = mockData.contracts.find(
+      (c: Contract) => c.contractId === contractId
+    );
+    if (!contract) return undefined;
+    if (contract.status === ContractStatus.Voided) return contract;
+
+    // Chỉ xử lý theo spec khi ở trạng thái Active
+    if (contract.status === ContractStatus.Active) {
+      contract.signedByRenter = true;
+      contract.updatedAt = new Date().toISOString();
+
+      if (contract.signedByStaff) {
+        // Cả hai đã ký → Completed, set signedAt nếu chưa có
+        contract.status = ContractStatus.Completed;
+        contract.signedAt = contract.signedAt || new Date().toISOString();
+      }
+      // Nếu staff chưa ký → giữ Active
     }
     return contract;
   },

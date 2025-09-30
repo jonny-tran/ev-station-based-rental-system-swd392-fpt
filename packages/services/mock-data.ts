@@ -603,6 +603,19 @@ export const mockData = {
       signedByRenter: true,
       signedByStaff: false,
     },
+    // New: Active contract belonging to renter r-1, renter chưa ký (để test nút "Ký kết")
+    {
+      contractId: "contract-active-wait-renter-r1",
+      bookingId: "b-6",
+      termsAndConditions: "Điều khoản chờ renter ký...",
+      startDate: "2025-10-12T09:00:00Z",
+      endDate: "2025-10-12T18:00:00Z",
+      createdAt: "2025-10-01T09:00:00Z",
+      updatedAt: "2025-10-01T09:00:00Z",
+      status: "Active",
+      signedByRenter: false,
+      signedByStaff: false,
+    },
   ] as Contract[],
 
   // Payments
