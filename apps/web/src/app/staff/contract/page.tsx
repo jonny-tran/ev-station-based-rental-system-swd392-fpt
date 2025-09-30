@@ -3,6 +3,7 @@
 import { StaffSidebar } from "@/components/sidebar/staff-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { PageHeader } from "@/components/sidebar/page-header";
+import { ContractList } from "@/components/staff/contract/ContractList";
 
 export default function StaffContractPage() {
   return (
@@ -20,6 +21,7 @@ export default function StaffContractPage() {
           <h1 className="text-3xl font-bold tracking-tight">
             Hợp đồng (Quản lý hợp đồng thuê xe)
           </h1>
+          <ContractList />
         </div>
       </SidebarInset>
     </SidebarProvider>

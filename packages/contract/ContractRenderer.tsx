@@ -3,9 +3,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
-import { ContractData } from "../../../../../../../../packages/contract/contract-types";
-import { ContractGenerator } from "../../../../../../../../packages/contract/contract-generator";
-import { CONTRACT_TEMPLATE } from "../../../../../../../../packages/contract/contract-template";
+import { ContractData } from "./contract-types";
+import { ContractGenerator } from "./contract-generator";
+import { CONTRACT_TEMPLATE } from "./contract-template";
 
 interface ContractRendererProps {
   contractData: ContractData;
@@ -38,6 +38,8 @@ export function ContractRenderer({
               .contract-root{white-space: pre-wrap; word-break: break-word;}
               table{border-collapse:collapse; width:100%;}
               th,td{border:1px solid #e5e7eb; padding:8px; vertical-align: top;}
+              .signature-done{display:inline-block;padding:6px 10px;border-radius:6px;background:#e6f9ed;color:#067647;font-weight:600;border:1px solid #b7f0ce}
+              .signature-placeholder{display:inline-block;padding:6px 10px;border-radius:6px;background:#f1f5f9;color:#64748b;border:1px solid #e2e8f0}
             </style></head><body><div class="contract-root">${generatedHtml}</div></body></html>`;
       setContractHtml(wrappedHtml);
     } catch (error) {

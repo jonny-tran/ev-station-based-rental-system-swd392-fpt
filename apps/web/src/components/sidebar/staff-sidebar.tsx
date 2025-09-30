@@ -43,6 +43,12 @@ const getStaffNavItems = (pathname: string) => [
     isActive: pathname.startsWith("/staff/checkin-session"),
   },
   {
+    title: "Hợp đồng",
+    url: "/staff/contract",
+    icon: FileText,
+    isActive: pathname.startsWith("/staff/contract"),
+  },
+  {
     title: "Trả xe",
     url: "/staff/return",
     icon: Car,
@@ -53,12 +59,6 @@ const getStaffNavItems = (pathname: string) => [
     url: "/staff/booking",
     icon: Calendar,
     isActive: pathname.startsWith("/staff/booking"),
-  },
-  {
-    title: "Hợp đồng",
-    url: "/staff/contract",
-    icon: FileText,
-    isActive: pathname.startsWith("/staff/contract"),
   },
   {
     title: "Lịch sử giao - nhận",

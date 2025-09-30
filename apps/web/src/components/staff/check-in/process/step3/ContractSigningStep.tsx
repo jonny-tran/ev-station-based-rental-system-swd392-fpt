@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { ContractRenderer } from "./ContractRenderer";
+import { ContractRenderer } from "../../../../../../../../packages/contract/ContractRenderer";
 import { RenterInfoPanel } from "./RenterInfoPanel";
 import { ActionButtons } from "./ActionButtons";
 import { Alert, AlertDescription } from "@/components/ui/alert";

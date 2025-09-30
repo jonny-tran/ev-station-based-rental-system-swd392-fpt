@@ -69,7 +69,7 @@ export class ContractGenerator {
     if (data.renterSignature) {
       html = html.replace(
         "<<SIGN_RENTER>>",
-        `<img src="${data.renterSignature}" alt="Renter Signature" class="signature-image" />`
+        '<div class="signature-done">Đã ký</div>'
       );
     } else {
       html = html.replace(
@@ -82,7 +82,7 @@ export class ContractGenerator {
     if (data.staffSignature) {
       html = html.replace(
         "<<SIGN_STAFF>>",
-        `<img src="${data.staffSignature}" alt="Staff Signature" class="signature-image" />`
+        '<div class="signature-done">Đã ký</div>'
       );
     } else {
       html = html.replace(

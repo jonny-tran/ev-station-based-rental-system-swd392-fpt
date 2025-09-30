@@ -32,7 +32,8 @@
     "../../packages/contract/contract-template.ts",
     "../../packages/contract/contract-types.ts",
     "../../packages/contract/contract-generator.ts",
-    "../../packages/contract/contract-data-service.ts"
+    "../../packages/contract/contract-data-service.ts",
+    "../../packages/contract/ContractRenderer.tsx"
   ],
   "exclude": ["node_modules"]
 }

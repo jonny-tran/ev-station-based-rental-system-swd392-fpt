@@ -13,4 +13,6 @@ export interface Contract {
   signedByRenter: boolean;
   signedByStaff: boolean;
   voidedAt?: string;
+  /** Lý do khi hợp đồng bị hủy/chấm dứt (nếu có) */
+  statusReason?: string;
 }

@@ -8,6 +8,7 @@ import { mockData } from "./mock-data";
 import { DriverLicense } from "../types/driverLicense";
 import { Contract } from "../types/contract";
 import { Payment } from "../types/payment";
+import { ContractStatus } from "../types/enum";
 
 // mockData được tách sang ./mock-data
 
@@ -64,6 +65,19 @@ export const mockService = {
     );
   },
 
+  // Tìm phiên check-in theo bookingId hoặc contractId (phục vụ điều hướng soạn hợp đồng)
+  getCheckInSessionByBookingOrContract: (args: {
+    bookingId?: string;
+    contractId?: string;
+  }): VehicleInspection | undefined => {
+    const { bookingId, contractId } = args;
+    return mockData.vehicleInspections.find((insp) => {
+      const okBooking = bookingId ? insp.bookingId === bookingId : true;
+      const okContract = contractId ? insp.contractId === contractId : true;
+      return okBooking && okContract && insp.inspectionType === "CheckIn";
+    });
+  },
+
   // Lấy vehicle inspections theo staff ID
   getVehicleInspectionsByStaffId: (staffId: string): VehicleInspection[] => {
     return mockData.vehicleInspections.filter(
@@ -83,6 +97,77 @@ export const mockService = {
     return mockData.contracts?.find(
       (c: Contract) => c.contractId === contractId
     );
+  },
+
+  // Lấy danh sách hợp đồng có filter + search + pagination
+  getContracts: (params?: {
+    page?: number;
+    pageSize?: number;
+    status?: ContractStatus | "All";
+    renterSigned?: boolean | "All";
+    staffSigned?: boolean | "All";
+    keyword?: string;
+  }): { items: Contract[]; total: number; page: number; pageSize: number } => {
+    const {
+      page = 1,
+      pageSize = 10,
+      status = "All",
+      renterSigned = "All",
+      staffSigned = "All",
+      keyword = "",
+    } = params || {};
+
+    let items = (mockData.contracts as Contract[]).slice();
+
+    // Filter theo status
+    if (status !== "All") {
+      items = items.filter((c) => c.status === status);
+    }
+
+    // Filter theo chữ ký renter/staff
+    if (renterSigned !== "All") {
+      items = items.filter((c) => c.signedByRenter === renterSigned);
+    }
+    if (staffSigned !== "All") {
+      items = items.filter((c) => c.signedByStaff === staffSigned);
+    }
+
+    // Search theo contractId/bookingId (đơn giản)
+    const q = keyword.trim().toLowerCase();
+    if (q) {
+      items = items.filter((c) =>
+        [c.contractId, c.bookingId].some((v) => v.toLowerCase().includes(q))
+      );
+    }
+
+    const total = items.length;
+    const start = (page - 1) * pageSize;
+    const end = start + pageSize;
+    const paged = items.slice(start, end);
+    return { items: paged, total, page, pageSize };
+  },
+
+  // Staff ký hợp đồng
+  signContractByStaff: (contractId: string): Contract | undefined => {
+    const contract = mockData.contracts.find(
+      (c: Contract) => c.contractId === contractId
+    );
+    if (!contract) return undefined;
+    if (contract.status === ContractStatus.Voided) return contract;
+
+    contract.signedByStaff = true;
+    contract.updatedAt = new Date().toISOString();
+    // Nếu renter đã ký, cập nhật trạng thái
+    if (contract.signedByRenter) {
+      // Nếu đang Draft → chuyển Active hoặc Completed tùy luồng; giữ Active để phù hợp UI
+      if (contract.status === ContractStatus.Draft) {
+        contract.status = ContractStatus.Completed;
+        contract.signedAt = contract.signedAt || new Date().toISOString();
+      } else if (contract.status === ContractStatus.Active) {
+        contract.status = ContractStatus.Completed;
+      }
+    }
+    return contract;
   },
 
   // Payments
