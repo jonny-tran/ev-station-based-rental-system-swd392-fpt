@@ -8,7 +8,11 @@ import { mockData } from "./mock-data";
 import { DriverLicense } from "../types/driverLicense";
 import { Contract } from "../types/contract";
 import { Payment } from "../types/payment";
-import { ContractStatus } from "../types/enum";
+import {
+  ContractStatus,
+  PaymentStatus,
+  VehicleInspectionStatus,
+} from "../types/enum";
 import {
   SettlementConfig,
   SettlementInput,
@@ -321,7 +325,7 @@ export const mockService = {
     );
     if (!p) return undefined;
     if (p.paymentMethod !== "VNPay") return p;
-    p.status = ok ? "Paid" : "Failed";
+    p.status = ok ? ("Paid" as PaymentStatus) : ("Failed" as PaymentStatus);
     p.paidAt = ok ? new Date().toISOString() : p.paidAt;
     p.transactionId = transactionId || p.transactionId;
     return p;
@@ -333,7 +337,7 @@ export const mockService = {
     );
     if (!insp) return undefined;
     if (insp.inspectionType !== "CheckOut") return insp;
-    insp.status = "Approved";
+    insp.status = "Completed" as VehicleInspectionStatus;
     insp.updatedAt = new Date().toISOString();
     return insp;
   },
