@@ -12,7 +12,11 @@ import {
   UseGuards,
   Request,
   ForbiddenException,
+  UseInterceptors,
+  UploadedFiles,
+  BadRequestException,
 } from '@nestjs/common';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import {
   ApiTags,
   ApiOperation,
@@ -37,6 +41,15 @@ import {
 } from '../dto/step1-response.dto';
 import { Step1ApproveDto } from '../dto/step1-approve.dto';
 import { Step1RejectDto } from '../dto/step1-reject.dto';
+import { UploadPhotosResponseDto } from '../dto/step2-upload-photos.dto';
+import {
+  UpdateVehicleDataDto,
+  UpdateVehicleDataResponseDto,
+} from '../dto/step2-vehicle-data.dto';
+import {
+  Step2RejectDto,
+  Step2RejectResponseDto,
+} from '../dto/step2-reject.dto';
 
 @ApiTags('Check-in Session')
 @ApiBearerAuth()
@@ -305,6 +318,174 @@ export class CheckinSessionController {
     }
 
     return this.checkinSessionService.rejectStep1(
+      inspectionId,
+      req.user.staffId,
+      rejectDto,
+    );
+  }
+
+  @Post('checkin-session/:inspectionId/photos')
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'front', maxCount: 1 },
+      { name: 'rear', maxCount: 1 },
+      { name: 'left', maxCount: 1 },
+      { name: 'right', maxCount: 1 },
+      { name: 'odo', maxCount: 1 },
+      { name: 'battery', maxCount: 1 },
+    ]),
+  )
+  @ApiOperation({ summary: 'Upload vehicle inspection photos' })
+  @ApiParam({
+    name: 'inspectionId',
+    description: 'Inspection ID',
+    example: 101,
+    type: 'number',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Vehicle inspection photos uploaded successfully',
+    type: UploadPhotosResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Missing or invalid files',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Access denied. Staff only or mismatched staff ID.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Inspection not found',
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Cloudinary upload failure',
+  })
+  async uploadInspectionPhotos(
+    @Param('inspectionId') inspectionId: number,
+    @UploadedFiles()
+    files: {
+      front?: Express.Multer.File[];
+      rear?: Express.Multer.File[];
+      left?: Express.Multer.File[];
+      right?: Express.Multer.File[];
+      odo?: Express.Multer.File[];
+      battery?: Express.Multer.File[];
+    },
+    @Request() req: any,
+  ): Promise<UploadPhotosResponseDto> {
+    // Check if user is staff
+    if (req.user.role !== 'Staff') {
+      throw new ForbiddenException('Access denied. Staff only.');
+    }
+
+    // Convert FileFieldsInterceptor format to array
+    const filesArray: Express.Multer.File[] = [];
+    const requiredFields = ['front', 'rear', 'left', 'right', 'odo', 'battery'];
+
+    for (const field of requiredFields) {
+      if (!files[field] || files[field].length === 0) {
+        throw new BadRequestException(`Missing required photo: ${field}`);
+      }
+      filesArray.push(files[field][0]);
+    }
+
+    return this.checkinSessionService.uploadInspectionPhotos(
+      inspectionId,
+      req.user.staffId,
+      filesArray,
+    );
+  }
+
+  @Put('checkin-session/:inspectionId/vehicle-data')
+  @ApiOperation({ summary: 'Update vehicle inspection data' })
+  @ApiParam({
+    name: 'inspectionId',
+    description: 'Inspection ID',
+    example: 101,
+    type: 'number',
+  })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Vehicle inspection data updated and contract created (Step 3)',
+    type: UpdateVehicleDataResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid step or missing fields',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Access denied. Staff only or mismatched staff ID.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Inspection not found',
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Failed contract creation',
+  })
+  async updateVehicleData(
+    @Param('inspectionId') inspectionId: number,
+    @Body() updateDto: UpdateVehicleDataDto,
+    @Request() req: any,
+  ): Promise<UpdateVehicleDataResponseDto> {
+    // Check if user is staff
+    if (req.user.role !== 'Staff') {
+      throw new ForbiddenException('Access denied. Staff only.');
+    }
+
+    return this.checkinSessionService.updateVehicleData(
+      inspectionId,
+      req.user.staffId,
+      updateDto,
+    );
+  }
+
+  @Put('checkin-session/:inspectionId/step2/reject')
+  @ApiOperation({ summary: 'Reject Step 2 - Vehicle Inspection' })
+  @ApiParam({
+    name: 'inspectionId',
+    description: 'Inspection ID',
+    example: 101,
+    type: 'number',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Vehicle inspection rejected.',
+    type: Step2RejectResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Missing reason or invalid step',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Access denied. Staff only or mismatched staff ID.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Inspection not found',
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Update failed',
+  })
+  async rejectStep2(
+    @Param('inspectionId') inspectionId: number,
+    @Body() rejectDto: Step2RejectDto,
+    @Request() req: any,
+  ): Promise<Step2RejectResponseDto> {
+    // Check if user is staff
+    if (req.user.role !== 'Staff') {
+      throw new ForbiddenException('Access denied. Staff only.');
+    }
+
+    return this.checkinSessionService.rejectStep2(
       inspectionId,
       req.user.staffId,
       rejectDto,

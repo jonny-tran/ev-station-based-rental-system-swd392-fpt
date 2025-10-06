@@ -15,6 +15,8 @@ import { RentalLocation } from '../entities/rentalLocation.entity';
 import { Renter } from '../entities/renter.entity';
 import { Account } from '../entities/account.entity';
 import { DriverLicense } from '../entities/driver-license.entity';
+import { Contract } from '../entities/contract.entity';
+import { CloudinaryService } from '../../third-party/cloudinary/cloudinary.service';
 
 @Module({
   imports: [
@@ -26,6 +28,7 @@ import { DriverLicense } from '../entities/driver-license.entity';
       Renter,
       Account,
       DriverLicense,
+      Contract,
     ]),
   ],
   controllers: [CheckinSessionController],
@@ -37,6 +40,7 @@ import { DriverLicense } from '../entities/driver-license.entity';
     RentalLocationRepository,
     RenterRepository,
     DriverLicenseRepository,
+    CloudinaryService,
   ],
   exports: [CheckinSessionService],
 })

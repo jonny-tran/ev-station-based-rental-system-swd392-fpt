@@ -1,17 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, SelectQueryBuilder } from 'typeorm';
+import { Repository, SelectQueryBuilder, DataSource } from 'typeorm';
 import {
   VehicleInspection,
   InspectionType,
   InspectionStatus,
 } from '../entities/vehicle-inspection.entity';
+import { Contract, ContractStatus } from '../entities/contract.entity';
+import { UpdateVehicleDataDto } from '../dto/step2-vehicle-data.dto';
 
 @Injectable()
 export class CheckinSessionRepository {
   constructor(
     @InjectRepository(VehicleInspection)
     private readonly vehicleInspectionRepository: Repository<VehicleInspection>,
+    @InjectRepository(Contract)
+    private readonly contractRepository: Repository<Contract>,
+    private readonly dataSource: DataSource,
   ) {}
 
   async findExistingCheckinSession(
@@ -123,6 +128,112 @@ export class CheckinSessionRepository {
       Status: InspectionStatus.Rejected,
       RejectedReason: reason,
       CurrentStep: 1,
+      UpdatedAt: new Date(),
+    };
+
+    await this.vehicleInspectionRepository.update(
+      { InspectionDatTTID: inspectionId },
+      updateData,
+    );
+
+    const updatedInspection = await this.findByIdWithAllRelations(inspectionId);
+    if (!updatedInspection) {
+      throw new Error('Failed to retrieve updated inspection');
+    }
+    return updatedInspection;
+  }
+
+  async updatePhotoUrls(
+    inspectionId: number,
+    photoUrls: string,
+  ): Promise<VehicleInspection> {
+    const updateData: Partial<VehicleInspection> = {
+      PhotoUrls: photoUrls,
+      UpdatedAt: new Date(),
+    };
+
+    await this.vehicleInspectionRepository.update(
+      { InspectionDatTTID: inspectionId },
+      updateData,
+    );
+
+    const updatedInspection = await this.findByIdWithAllRelations(inspectionId);
+    if (!updatedInspection) {
+      throw new Error('Failed to retrieve updated inspection');
+    }
+    return updatedInspection;
+  }
+
+  async updateVehicleDataAndCreateContract(
+    inspectionId: number,
+    updateDto: UpdateVehicleDataDto,
+  ): Promise<{ inspection: VehicleInspection; contract: Contract }> {
+    return this.dataSource.transaction(async (manager) => {
+      // Get inspection with booking details
+      const inspection = await manager.findOne(VehicleInspection, {
+        where: { InspectionDatTTID: inspectionId },
+        relations: ['booking'],
+      });
+
+      if (!inspection) {
+        throw new Error('Inspection not found');
+      }
+
+      if (!inspection.booking) {
+        throw new Error('Inspection booking not found');
+      }
+
+      // Update inspection data
+      const updateData: Partial<VehicleInspection> = {
+        OdometerReading: updateDto.odometerKm,
+        BatteryLevel: updateDto.batteryLevel,
+        VehicleConditionNotes: updateDto.vehicleConditionNotes,
+        DamageNotes: updateDto.damageNotes,
+        CurrentStep: 3,
+        UpdatedAt: new Date(),
+      };
+
+      await manager.update(
+        VehicleInspection,
+        { InspectionDatTTID: inspectionId },
+        updateData,
+      );
+
+      // Create contract
+      const contract = manager.create(Contract, {
+        BookingID: inspection.BookingID,
+        TermsAndConditions: 'Standard rental terms and conditions apply.',
+        StartDate: new Date(),
+        EndDate: inspection.booking.EndTime,
+        Status: ContractStatus.Draft,
+        CreatedAt: new Date(),
+        UpdatedAt: new Date(),
+      });
+
+      const savedContract = await manager.save(Contract, contract);
+
+      // Get updated inspection with minimal relations (avoid timeout)
+      const updatedInspection = await manager.findOne(VehicleInspection, {
+        where: { InspectionDatTTID: inspectionId },
+        relations: ['booking'], // Only load booking relation
+      });
+
+      if (!updatedInspection) {
+        throw new Error('Failed to retrieve updated inspection');
+      }
+
+      return { inspection: updatedInspection, contract: savedContract };
+    });
+  }
+
+  async updateStep2Rejection(
+    inspectionId: number,
+    reason: string,
+  ): Promise<VehicleInspection> {
+    const updateData: Partial<VehicleInspection> = {
+      Status: InspectionStatus.Rejected,
+      RejectedReason: reason,
+      CurrentStep: 2,
       UpdatedAt: new Date(),
     };
 

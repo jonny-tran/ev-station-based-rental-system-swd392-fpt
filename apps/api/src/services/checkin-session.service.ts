@@ -27,6 +27,16 @@ import {
 } from '../dto/step1-response.dto';
 import { Step1ApproveDto } from '../dto/step1-approve.dto';
 import { Step1RejectDto } from '../dto/step1-reject.dto';
+import { UploadPhotosResponseDto } from '../dto/step2-upload-photos.dto';
+import {
+  UpdateVehicleDataDto,
+  UpdateVehicleDataResponseDto,
+} from '../dto/step2-vehicle-data.dto';
+import {
+  Step2RejectDto,
+  Step2RejectResponseDto,
+} from '../dto/step2-reject.dto';
+import { CloudinaryService } from '../../third-party/cloudinary/cloudinary.service';
 @Injectable()
 export class CheckinSessionService {
   constructor(
@@ -35,6 +45,7 @@ export class CheckinSessionService {
     private readonly vehicleRepository: VehicleRepository,
     private readonly rentalLocationRepository: RentalLocationRepository,
     private readonly renterRepository: RenterRepository,
+    private readonly cloudinaryService: CloudinaryService,
   ) {}
 
   async validateQRCode(bookingId: string): Promise<ValidateQRResponseDto> {
@@ -487,6 +498,210 @@ export class CheckinSessionService {
         throw error;
       }
       throw new InternalServerErrorException('Failed to reject step 1');
+    }
+  }
+
+  async uploadInspectionPhotos(
+    inspectionId: number,
+    staffId: string,
+    files: Express.Multer.File[],
+  ): Promise<UploadPhotosResponseDto> {
+    try {
+      // Get inspection to validate
+      const inspection =
+        await this.checkinSessionRepository.findByIdWithAllRelations(
+          inspectionId,
+        );
+
+      if (!inspection) {
+        throw new NotFoundException('Inspection not found');
+      }
+
+      // Verify staff ownership
+      if (inspection.StaffID !== staffId) {
+        throw new ForbiddenException(
+          'Access denied. Staff only or mismatched staff ID.',
+        );
+      }
+
+      // Validate current step
+      if (inspection.CurrentStep !== 2) {
+        throw new BadRequestException('Invalid step. Must be at step 2.');
+      }
+
+      // Validate file count
+      if (!files || files.length !== 6) {
+        throw new BadRequestException('All 6 inspection photos are required');
+      }
+
+      // Validate file types and sizes
+      const allowedMimeTypes = ['image/jpeg', 'image/png'];
+      const maxSize = 5 * 1024 * 1024; // 5MB
+
+      for (const file of files) {
+        if (!allowedMimeTypes.includes(file.mimetype)) {
+          throw new BadRequestException(
+            'Invalid file type. Only JPEG and PNG are allowed.',
+          );
+        }
+        if (file.size > maxSize) {
+          throw new BadRequestException(
+            'File size too large. Maximum size is 5MB.',
+          );
+        }
+      }
+
+      // Upload files to Cloudinary
+      const photoUrls =
+        await this.cloudinaryService.uploadMultipleImages(files);
+
+      // Update inspection with photo URLs
+      const updatedInspection =
+        await this.checkinSessionRepository.updatePhotoUrls(
+          inspectionId,
+          JSON.stringify(photoUrls),
+        );
+
+      return {
+        message: 'Vehicle inspection photos uploaded successfully',
+        data: {
+          inspectionId: updatedInspection.InspectionDatTTID,
+          photoUrls,
+        },
+      };
+    } catch (error) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof ForbiddenException ||
+        error instanceof BadRequestException
+      ) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Failed to upload photos');
+    }
+  }
+
+  async updateVehicleData(
+    inspectionId: number,
+    staffId: string,
+    updateDto: UpdateVehicleDataDto,
+  ): Promise<UpdateVehicleDataResponseDto> {
+    try {
+      // Get inspection to validate
+      const inspection =
+        await this.checkinSessionRepository.findByIdWithAllRelations(
+          inspectionId,
+        );
+
+      if (!inspection) {
+        throw new NotFoundException('Inspection not found');
+      }
+
+      // Verify staff ownership
+      if (inspection.StaffID !== staffId) {
+        throw new ForbiddenException(
+          'Access denied. Staff only or mismatched staff ID.',
+        );
+      }
+
+      // Validate current step and status
+      if (inspection.CurrentStep !== 2) {
+        throw new BadRequestException('Invalid step. Must be at step 2.');
+      }
+
+      if (inspection.Status !== 'Pending') {
+        throw new BadRequestException('Invalid status. Must be Pending.');
+      }
+
+      // Update vehicle inspection data and create contract
+      const result =
+        await this.checkinSessionRepository.updateVehicleDataAndCreateContract(
+          inspectionId,
+          updateDto,
+        );
+
+      return {
+        message:
+          'Vehicle inspection data updated and contract created (Step 3)',
+        data: {
+          inspectionId: result.inspection.InspectionDatTTID,
+          currentStep: result.inspection.CurrentStep,
+          status: result.inspection.Status,
+          odometerReading: result.inspection.OdometerReading,
+          batteryLevel: result.inspection.BatteryLevel,
+          contract: {
+            contractId: result.contract.ContractDatTTID,
+            bookingId: result.contract.BookingID,
+            status: result.contract.Status,
+            startDate: result.contract.StartDate,
+            endDate: result.contract.EndDate,
+          },
+        },
+      };
+    } catch (error) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof ForbiddenException ||
+        error instanceof BadRequestException
+      ) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Failed to update vehicle data');
+    }
+  }
+
+  async rejectStep2(
+    inspectionId: number,
+    staffId: string,
+    rejectDto: Step2RejectDto,
+  ): Promise<Step2RejectResponseDto> {
+    try {
+      // Get inspection to validate
+      const inspection =
+        await this.checkinSessionRepository.findByIdWithAllRelations(
+          inspectionId,
+        );
+
+      if (!inspection) {
+        throw new NotFoundException('Inspection not found');
+      }
+
+      // Verify staff ownership
+      if (inspection.StaffID !== staffId) {
+        throw new ForbiddenException(
+          'Access denied. Staff only or mismatched staff ID.',
+        );
+      }
+
+      // Validate current step
+      if (inspection.CurrentStep !== 2) {
+        throw new BadRequestException('Invalid step. Must be at step 2.');
+      }
+
+      // Update to rejected status
+      const updatedInspection =
+        await this.checkinSessionRepository.updateStep2Rejection(
+          inspectionId,
+          rejectDto.reason,
+        );
+
+      return {
+        message: 'Vehicle inspection rejected',
+        data: {
+          inspectionId: updatedInspection.InspectionDatTTID,
+          status: updatedInspection.Status,
+          rejectedReason: updatedInspection.RejectedReason,
+        },
+      };
+    } catch (error) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof ForbiddenException ||
+        error instanceof BadRequestException
+      ) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Failed to reject step 2');
     }
   }
 }
