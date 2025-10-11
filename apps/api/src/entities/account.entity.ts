@@ -15,6 +15,7 @@ export enum AccountStatus {
 
 @Entity('Account')
 export class Account {
+  [x: string]: any;
   @Column({ name: 'AccountID', type: 'uniqueidentifier', primary: true })
   accountId: string;
 

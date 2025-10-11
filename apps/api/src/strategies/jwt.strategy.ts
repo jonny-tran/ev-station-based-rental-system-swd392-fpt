@@ -51,21 +51,32 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       const staff = await this.staffRepository.findByAccountId(
         payload.accountId,
       );
+      if (!staff) {
+        throw new UnauthorizedException('Staff record not found');
+      }
       return {
         ...baseUser,
-        staffId: staff?.StaffID || null,
-        rentalLocationId: staff?.RentalLocationID || null,
+        sub: account.accountId, // Thêm sub field để tương thích với passport-jwt
+        staffId: staff.StaffID,
+        rentalLocationId: staff.RentalLocationID,
       };
     } else if (account.role === 'Renter') {
       const renter = await this.renterRepository.findByAccountId(
         payload.accountId,
       );
+      if (!renter) {
+        throw new UnauthorizedException('Renter record not found');
+      }
       return {
         ...baseUser,
-        renterId: renter?.RenterID || null,
+        sub: account.accountId, // Thêm sub field để tương thích với passport-jwt
+        renterId: renter.RenterID,
       };
     }
 
-    return baseUser;
+    return {
+      ...baseUser,
+      sub: account.accountId, // Thêm sub field để tương thích với passport-jwt
+    };
   }
 }

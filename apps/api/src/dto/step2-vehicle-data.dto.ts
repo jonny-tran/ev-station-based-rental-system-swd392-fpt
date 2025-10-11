@@ -120,6 +120,7 @@ export class UpdateVehicleDataResponseDto {
     contract: {
       contractId: string;
       bookingId: string;
+      createdByStaffId: string;
       status: string;
       startDate: Date;
       endDate: Date;

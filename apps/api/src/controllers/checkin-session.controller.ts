@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
@@ -490,5 +491,58 @@ export class CheckinSessionController {
       req.user.staffId,
       rejectDto,
     );
+  }
+
+  @Put('checkin-session/:inspectionId/step3/approve')
+  @ApiOperation({ summary: 'Approve Step 3 - Contract Signing' })
+  @ApiParam({
+    name: 'inspectionId',
+    description: 'Inspection ID',
+    example: 101,
+    type: 'number',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Contract signing completed. Moved to Step 4 - Payment.',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid step or contract not completed',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Access denied. Staff only or mismatched staff ID.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Inspection not found',
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Update failed',
+  })
+  async approveStep3(
+    @Param('inspectionId') inspectionId: number,
+    @Request() req: any,
+  ) {
+    // Check if user is staff
+    if (req.user.role !== 'Staff') {
+      throw new ForbiddenException('Access denied. Staff only.');
+    }
+
+    const result = await this.checkinSessionService.approveStep3(
+      inspectionId,
+      req.user.staffId,
+    );
+
+    return {
+      message: 'Contract signing completed. Moved to Step 4 - Payment.',
+      data: {
+        inspectionId: result.InspectionDatTTID,
+        currentStep: result.CurrentStep,
+        subStatus: result.SubStatus,
+        updatedAt: result.UpdatedAt,
+      },
+    };
   }
 }

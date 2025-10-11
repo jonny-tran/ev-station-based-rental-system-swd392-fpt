@@ -632,6 +632,7 @@ export class CheckinSessionService {
           contract: {
             contractId: result.contract.ContractDatTTID,
             bookingId: result.contract.BookingID,
+            createdByStaffId: result.contract.CreatedByStaffID,
             status: result.contract.Status,
             startDate: result.contract.StartDate,
             endDate: result.contract.EndDate,
@@ -702,6 +703,47 @@ export class CheckinSessionService {
         throw error;
       }
       throw new InternalServerErrorException('Failed to reject step 2');
+    }
+  }
+
+  async approveStep3(inspectionId: number, staffId: string) {
+    try {
+      // Get inspection to validate
+      const inspection =
+        await this.checkinSessionRepository.findByIdWithAllRelations(
+          inspectionId,
+        );
+
+      if (!inspection) {
+        throw new NotFoundException('Inspection not found');
+      }
+
+      // Verify staff ownership
+      if (inspection.StaffID !== staffId) {
+        throw new ForbiddenException(
+          'Access denied. Staff only or mismatched staff ID.',
+        );
+      }
+
+      // Validate current step
+      if (inspection.CurrentStep !== 3) {
+        throw new BadRequestException('Invalid step. Must be at step 3.');
+      }
+
+      // Update to step 4
+      const updatedInspection =
+        await this.checkinSessionRepository.updateStep3Approval(inspectionId);
+
+      return updatedInspection;
+    } catch (error) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof ForbiddenException ||
+        error instanceof BadRequestException
+      ) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Failed to approve step 3');
     }
   }
 }

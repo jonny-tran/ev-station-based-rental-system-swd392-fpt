@@ -1,5 +1,6 @@
 import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Booking } from './booking.entity';
+import { Staff } from './staff.entity';
 
 export enum ContractStatus {
   Draft = 'Draft',
@@ -22,6 +23,9 @@ export class Contract {
 
   @Column({ name: 'BookingID', type: 'uniqueidentifier' })
   BookingID: string;
+
+  @Column({ name: 'CreatedByStaffID', type: 'uniqueidentifier' })
+  CreatedByStaffID: string;
 
   @Column({
     name: 'TermsAndConditions',
@@ -78,4 +82,8 @@ export class Contract {
   @ManyToOne(() => Booking)
   @JoinColumn({ name: 'BookingID' })
   booking: Booking;
+
+  @ManyToOne(() => Staff)
+  @JoinColumn({ name: 'CreatedByStaffID' })
+  createdByStaff: Staff;
 }

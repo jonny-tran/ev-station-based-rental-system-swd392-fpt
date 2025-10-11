@@ -8,6 +8,7 @@ import { VehicleRepository } from '../repositories/vehicle.repository';
 import { RentalLocationRepository } from '../repositories/rental-location.repository';
 import { RenterRepository } from '../repositories/renter.repository';
 import { DriverLicenseRepository } from '../repositories/driver-license.repository';
+import { ContractRepository } from '../repositories/contract.repository';
 import { Booking } from '../entities/booking.entity';
 import { VehicleInspection } from '../entities/vehicle-inspection.entity';
 import { Vehicle } from '../entities/vehicle.entity';
@@ -40,6 +41,7 @@ import { CloudinaryService } from '../../third-party/cloudinary/cloudinary.servi
     RentalLocationRepository,
     RenterRepository,
     DriverLicenseRepository,
+    ContractRepository,
     CloudinaryService,
   ],
   exports: [CheckinSessionService],

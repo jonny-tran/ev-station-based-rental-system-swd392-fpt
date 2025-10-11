@@ -202,6 +202,7 @@ export class CheckinSessionRepository {
       // Create contract
       const contract = manager.create(Contract, {
         BookingID: inspection.BookingID,
+        CreatedByStaffID: inspection.StaffID, // Link to staff who created the contract
         TermsAndConditions: 'Standard rental terms and conditions apply.',
         StartDate: new Date(),
         EndDate: inspection.booking.EndTime,
@@ -247,6 +248,56 @@ export class CheckinSessionRepository {
       throw new Error('Failed to retrieve updated inspection');
     }
     return updatedInspection;
+  }
+
+  async updateStep3Approval(inspectionId: number): Promise<VehicleInspection> {
+    const updateData: Partial<VehicleInspection> = {
+      CurrentStep: 4,
+      SubStatus: 'WaitingPayment',
+      UpdatedAt: new Date(),
+    };
+
+    await this.vehicleInspectionRepository.update(
+      { InspectionDatTTID: inspectionId },
+      updateData,
+    );
+
+    const updatedInspection = await this.findByIdWithAllRelations(inspectionId);
+    if (!updatedInspection) {
+      throw new Error('Failed to retrieve updated inspection');
+    }
+    return updatedInspection;
+  }
+
+  async updateStep3Rejection(
+    inspectionId: number,
+    reason: string,
+  ): Promise<VehicleInspection> {
+    const updateData: Partial<VehicleInspection> = {
+      Status: InspectionStatus.Rejected,
+      RejectedReason: reason,
+      SubStatus: 'ContractVoided',
+      CurrentStep: 3,
+      UpdatedAt: new Date(),
+    };
+
+    await this.vehicleInspectionRepository.update(
+      { InspectionDatTTID: inspectionId },
+      updateData,
+    );
+
+    const updatedInspection = await this.findByIdWithAllRelations(inspectionId);
+    if (!updatedInspection) {
+      throw new Error('Failed to retrieve updated inspection');
+    }
+    return updatedInspection;
+  }
+
+  async findByBookingId(bookingId: string): Promise<VehicleInspection | null> {
+    return this.vehicleInspectionRepository.findOne({
+      where: { BookingID: bookingId },
+      relations: ['booking'],
+    });
   }
 
   private createCheckinSessionsQueryBuilder(

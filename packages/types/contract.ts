@@ -3,6 +3,7 @@ import { ContractStatus } from "./enum";
 export interface Contract {
   contractId: string;
   bookingId: string;
+  createdByStaffId: string;
   termsAndConditions: string;
   startDate: string;
   endDate: string;

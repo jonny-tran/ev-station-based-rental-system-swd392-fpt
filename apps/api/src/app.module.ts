@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './modules/auth.module';
 import { BookingModule } from './modules/booking.module';
 import { CheckinSessionModule } from './modules/checkin-session.module';
+import { ContractModule } from './modules/contract.module';
 import { Account } from './entities/account.entity';
 import { Booking } from './entities/booking.entity';
 import { Vehicle } from './entities/vehicle.entity';
@@ -49,6 +50,7 @@ import { CloudinaryProvider } from '../third-party/cloudinary/cloudinary.config'
     AuthModule,
     BookingModule,
     CheckinSessionModule,
+    ContractModule,
   ],
   providers: [CloudinaryProvider],
 })
