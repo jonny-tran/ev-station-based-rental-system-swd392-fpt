@@ -1,6 +1,7 @@
 import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Vehicle } from './vehicle.entity';
 import { Renter } from './renter.entity';
+import { BookingStatus } from '@/packages/types/booking/booking-status';
 
 @Entity('Booking')
 export class Booking {
@@ -23,7 +24,7 @@ export class Booking {
   DepositAmount: number;
 
   @Column({ name: 'Status', type: 'nvarchar', length: 255 })
-  Status: 'Pending' | 'Confirmed' | 'Cancelled' | 'Expired' | 'Completed';
+  Status: BookingStatus;
 
   @Column({ name: 'CreatedAt', type: 'datetime2' })
   CreatedAt: Date;

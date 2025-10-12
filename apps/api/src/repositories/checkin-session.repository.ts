@@ -1,12 +1,15 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder, DataSource } from 'typeorm';
+import { VehicleInspection } from '../entities/vehicle-inspection.entity';
+import { Contract } from '../entities/contract.entity';
 import {
-  VehicleInspection,
-  InspectionType,
-  InspectionStatus,
-} from '../entities/vehicle-inspection.entity';
-import { Contract, ContractStatus } from '../entities/contract.entity';
+  VehicleInspectionType,
+  VehicleInspectionStatus,
+  ContractStatus,
+} from '@/packages/types';
 import { UpdateVehicleDataDto } from '../dto/step2-vehicle-data.dto';
 
 @Injectable()
@@ -26,7 +29,7 @@ export class CheckinSessionRepository {
       .createQueryBuilder('inspection')
       .where('inspection.BookingID = :bookingId', { bookingId })
       .andWhere('inspection.InspectionType = :type', {
-        type: InspectionType.CheckIn,
+        type: VehicleInspectionType.CheckIn,
       })
       .getOne();
   }
@@ -38,10 +41,10 @@ export class CheckinSessionRepository {
     const inspection = this.vehicleInspectionRepository.create({
       BookingID: bookingId,
       StaffID: staffId,
-      InspectionType: InspectionType.CheckIn,
+      InspectionType: VehicleInspectionType.CheckIn,
       InspectionDateTime: new Date(),
       CurrentStep: 1,
-      Status: InspectionStatus.Pending,
+      Status: VehicleInspectionStatus.Pending,
       CreatedAt: new Date(),
       UpdatedAt: new Date(),
     });
@@ -53,7 +56,7 @@ export class CheckinSessionRepository {
     staffId: string,
     page: number = 1,
     pageSize: number = 10,
-    status?: InspectionStatus,
+    status?: VehicleInspectionStatus,
     search?: string,
   ): Promise<{ sessions: VehicleInspection[]; total: number }> {
     const queryBuilder = this.createCheckinSessionsQueryBuilder(staffId);
@@ -125,7 +128,7 @@ export class CheckinSessionRepository {
     reason: string,
   ): Promise<VehicleInspection> {
     const updateData: Partial<VehicleInspection> = {
-      Status: InspectionStatus.Rejected,
+      Status: VehicleInspectionStatus.Rejected,
       RejectedReason: reason,
       CurrentStep: 1,
       UpdatedAt: new Date(),
@@ -232,7 +235,7 @@ export class CheckinSessionRepository {
     reason: string,
   ): Promise<VehicleInspection> {
     const updateData: Partial<VehicleInspection> = {
-      Status: InspectionStatus.Rejected,
+      Status: VehicleInspectionStatus.Rejected,
       RejectedReason: reason,
       CurrentStep: 2,
       UpdatedAt: new Date(),
@@ -274,7 +277,7 @@ export class CheckinSessionRepository {
     reason: string,
   ): Promise<VehicleInspection> {
     const updateData: Partial<VehicleInspection> = {
-      Status: InspectionStatus.Rejected,
+      Status: VehicleInspectionStatus.Rejected,
       RejectedReason: reason,
       SubStatus: 'ContractVoided',
       CurrentStep: 3,
@@ -312,7 +315,7 @@ export class CheckinSessionRepository {
       .leftJoinAndSelect('renter.account', 'account')
       .where('inspection.StaffID = :staffId', { staffId })
       .andWhere('inspection.InspectionType = :type', {
-        type: InspectionType.CheckIn,
+        type: VehicleInspectionType.CheckIn,
       });
   }
 }

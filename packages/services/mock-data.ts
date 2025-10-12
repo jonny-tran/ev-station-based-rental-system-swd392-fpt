@@ -1,24 +1,24 @@
 import { Booking } from "../types/booking";
 import { Vehicle } from "../types/vehicle";
-import { Renter } from "../types/renter";
-import { Account } from "../types/account";
-import { RentalLocation } from "../types/rentalLocation";
-import { VehicleInspection } from "../types/vehicleInspection";
+import { Renter } from "../types/rental";
+import { Account } from "../types/auth";
+import { RentalLocation } from "../types/rental";
+import { VehicleInspection } from "../types/vehicle";
 import { Contract } from "../types/contract";
 import { Payment } from "../types/payment";
-import { DriverLicense } from "../types/driverLicense";
+import { DriverLicense } from "../types/documents";
 
 // Mock data từ db.json
 export const mockData = {
   vehicles: [
     {
-      vehicleId: "v-1",
+      id: "v-1",
       rentalLocationId: "loc-1",
       licensePlate: "59A1-12345",
       model: "Klara S",
       brand: "VinFast",
       year: 2023,
-      odometerKm: 1520,
+      mileage: 1520,
       batteryLevel: 85,
       batteryCapacity: 3200,
       status: "Available",
@@ -28,13 +28,13 @@ export const mockData = {
       updatedAt: "2025-09-25T10:00:00Z",
     },
     {
-      vehicleId: "v-2",
+      id: "v-2",
       rentalLocationId: "loc-1",
       licensePlate: "59B1-67890",
       model: "Weaver 200",
       brand: "Dat Bike",
       year: 2024,
-      odometerKm: 860,
+      mileage: 860,
       batteryLevel: 72,
       batteryCapacity: 5000,
       status: "Available",
@@ -44,13 +44,13 @@ export const mockData = {
       updatedAt: "2025-09-20T14:00:00Z",
     },
     {
-      vehicleId: "v-3",
+      id: "v-3",
       rentalLocationId: "loc-2",
       licensePlate: "59C1-22222",
       model: "G5",
       brand: "Yadea",
       year: 2022,
-      odometerKm: 3450,
+      mileage: 3450,
       batteryLevel: 40,
       batteryCapacity: 2000,
       status: "Available",
@@ -60,13 +60,13 @@ export const mockData = {
       updatedAt: "2025-09-15T10:00:00Z",
     },
     {
-      vehicleId: "v-4",
+      id: "v-4",
       rentalLocationId: "loc-2",
       licensePlate: "59D1-33333",
       model: "Crea eScooter",
       brand: "Honda",
       year: 2023,
-      odometerKm: 1900,
+      mileage: 1900,
       batteryLevel: 95,
       batteryCapacity: 2800,
       status: "Available",
@@ -76,13 +76,13 @@ export const mockData = {
       updatedAt: "2025-09-26T10:00:00Z",
     },
     {
-      vehicleId: "v-5",
+      id: "v-5",
       rentalLocationId: "loc-3",
       licensePlate: "59E1-44444",
       model: "Xmen Neo",
       brand: "Yadea",
       year: 2021,
-      odometerKm: 5200,
+      mileage: 5200,
       batteryLevel: 30,
       batteryCapacity: 1800,
       status: "Rented",
@@ -95,78 +95,85 @@ export const mockData = {
 
   bookings: [
     {
-      bookingId: "b-1",
+      id: "b-1",
       renterId: "r-1",
       vehicleId: "v-1",
       rentalLocationId: "loc-1",
       depositAmount: 500000,
-      bookingStatus: "Pending",
+      status: "Pending",
       startTime: "2025-09-28T09:00:00Z",
       endTime: "2025-09-28T18:00:00Z",
       createdAt: "2025-09-25T10:00:00Z",
+      updatedAt: "2025-09-25T10:00:00Z",
     },
     {
-      bookingId: "b-2",
+      id: "b-2",
       renterId: "r-1",
       vehicleId: "v-2",
       rentalLocationId: "loc-1",
       depositAmount: 400000,
-      bookingStatus: "Confirmed",
+      status: "Confirmed",
       startTime: "2025-10-01T09:00:00Z",
       endTime: "2025-10-01T17:00:00Z",
       createdAt: "2025-09-26T09:00:00Z",
+      updatedAt: "2025-09-26T09:00:00Z",
     },
     {
-      bookingId: "b-3",
+      id: "b-3",
       renterId: "r-1",
       vehicleId: "v-3",
       rentalLocationId: "loc-2",
       depositAmount: 450000,
-      bookingStatus: "Completed",
+      status: "Completed",
       startTime: "2025-09-20T09:00:00Z",
       endTime: "2025-09-20T18:00:00Z",
       createdAt: "2025-09-15T09:00:00Z",
+      updatedAt: "2025-09-15T09:00:00Z",
     },
     {
-      bookingId: "b-4",
+      id: "b-4",
       renterId: "r-1",
       vehicleId: "v-4",
       rentalLocationId: "loc-2",
       depositAmount: 550000,
-      bookingStatus: "Confirmed",
+      status: "Confirmed",
       startTime: "2025-10-05T09:00:00Z",
       endTime: "2025-10-05T18:00:00Z",
       createdAt: "2025-09-27T09:00:00Z",
+      updatedAt: "2025-09-27T09:00:00Z",
     },
     {
-      bookingId: "b-5",
+      id: "b-5",
       renterId: "r-1",
       vehicleId: "v-5",
       rentalLocationId: "loc-3",
       depositAmount: 300000,
-      bookingStatus: "Cancelled",
+      status: "Cancelled",
       startTime: "2025-10-10T09:00:00Z",
       endTime: "2025-10-10T18:00:00Z",
       createdAt: "2025-09-28T09:00:00Z",
+      updatedAt: "2025-09-28T09:00:00Z",
     },
     {
-      bookingId: "b-6",
+      id: "b-6",
       renterId: "r-1",
       vehicleId: "v-1",
       rentalLocationId: "loc-1",
       depositAmount: 600000,
-      bookingStatus: "Expired",
+      status: "Expired",
       startTime: "2025-09-15T09:00:00Z",
       endTime: "2025-09-15T18:00:00Z",
       createdAt: "2025-09-10T09:00:00Z",
+      updatedAt: "2025-09-10T09:00:00Z",
     },
   ] as Booking[],
 
   accounts: [
     {
-      accountId: "a-1",
+      id: "a-1",
       fullName: "Renter A",
       email: "renter@example.com",
+      passwordHash: "hashed_password_123",
       phoneNumber: "0901234567",
       avatarUrl: "https://mock.cloudinary.com/renter-avatar.jpg",
       role: "Renter",
@@ -175,9 +182,10 @@ export const mockData = {
       updatedAt: "2025-09-20T09:00:00Z",
     },
     {
-      accountId: "a-2",
+      id: "a-2",
       fullName: "Staff A",
       email: "staff@example.com",
+      passwordHash: "hashed_password_456",
       phoneNumber: "0909876543",
       avatarUrl: "https://mock.cloudinary.com/staff-avatar.jpg",
       role: "Staff",
@@ -189,13 +197,15 @@ export const mockData = {
 
   renters: [
     {
-      renterId: "r-1",
+      id: "r-1",
       accountId: "a-1",
       address: "123 Lê Lợi, Q.1, TP.HCM",
       dateOfBirth: "1998-05-20",
       identityNumber: "079012345678",
       frontIdentityImageUrl: "https://mock.cloudinary.com/id-front.jpg",
       backIdentityImageUrl: "https://mock.cloudinary.com/id-back.jpg",
+      createdAt: "2025-01-01T09:00:00Z",
+      updatedAt: "2025-09-20T09:00:00Z",
     },
   ] as Renter[],
 
@@ -203,82 +213,97 @@ export const mockData = {
   driverLicenses: [
     // Case I: Verified
     {
-      driverLicenseId: "dl-1",
+      id: 1,
       renterId: "r-1",
       licenseNumber: "B2-123456789",
-      issueDate: "2022-06-01",
+      issuedDate: "2022-06-01",
       expiryDate: "2032-06-01",
+      licenseType: "Car",
       issuedBy: "Sở GTVT TP.HCM",
       licenseImageUrl: "https://mock.cloudinary.com/license-verified.jpg",
       verifiedStatus: "Verified",
       verifiedAt: "2025-09-27T08:00:00Z",
+      createdAt: "2025-09-27T08:00:00Z",
+      updatedAt: "2025-09-27T08:00:00Z",
     },
     // Case II: Pending
     {
-      driverLicenseId: "dl-2",
+      id: 2,
       renterId: "r-1",
       licenseNumber: "A1-987654321",
-      issueDate: "2020-01-10",
+      issuedDate: "2020-01-10",
       expiryDate: "2030-01-10",
+      licenseType: "Motorcycle",
       issuedBy: "Sở GTVT TP.HCM",
       licenseImageUrl: "https://mock.cloudinary.com/license-pending.jpg",
       verifiedStatus: "Pending",
       verifiedAt: "2025-09-27T09:00:00Z",
+      createdAt: "2025-09-27T09:00:00Z",
+      updatedAt: "2025-09-27T09:00:00Z",
     },
     // Case III: Rejected
     {
-      driverLicenseId: "dl-3",
+      id: 3,
       renterId: "r-1",
       licenseNumber: "A1-111222333",
-      issueDate: "2019-03-05",
+      issuedDate: "2019-03-05",
       expiryDate: "2029-03-05",
+      licenseType: "Motorcycle",
       issuedBy: "Sở GTVT TP.HCM",
       licenseImageUrl: "https://mock.cloudinary.com/license-rejected.jpg",
       verifiedStatus: "Rejected",
       verifiedAt: "2025-09-27T10:00:00Z",
+      createdAt: "2025-09-27T10:00:00Z",
+      updatedAt: "2025-09-27T10:00:00Z",
     },
   ] as DriverLicense[],
 
   // Mock rental locations
   rentalLocations: [
     {
-      locationId: "loc-1",
+      id: "loc-1",
       name: "Trạm Thuê Xe VinFast - Quận 1",
       address: "123 Nguyễn Huệ, Quận 1, TP.HCM",
       city: "TP.HCM",
       country: "Việt Nam",
       contactNumber: "028 1234 5678",
       openingHours: "7:00 - 22:00",
+      createdAt: "2025-01-01T09:00:00Z",
+      updatedAt: "2025-09-20T09:00:00Z",
     },
     {
-      locationId: "loc-2",
+      id: "loc-2",
       name: "Trạm Thuê Xe Dat Bike - Quận 3",
       address: "456 Lê Văn Sỹ, Quận 3, TP.HCM",
       city: "TP.HCM",
       country: "Việt Nam",
       contactNumber: "028 2345 6789",
       openingHours: "7:00 - 22:00",
+      createdAt: "2025-01-01T09:00:00Z",
+      updatedAt: "2025-09-20T09:00:00Z",
     },
     {
-      locationId: "loc-3",
+      id: "loc-3",
       name: "Trạm Thuê Xe Yadea - Quận 7",
       address: "789 Nguyễn Thị Thập, Quận 7, TP.HCM",
       city: "TP.HCM",
       country: "Việt Nam",
       contactNumber: "028 3456 7890",
       openingHours: "7:00 - 22:00",
+      createdAt: "2025-01-01T09:00:00Z",
+      updatedAt: "2025-09-20T09:00:00Z",
     },
   ] as RentalLocation[],
 
   vehicleInspections: [
     // Case 1: Check-in Pending – step 1 (license review)
     {
-      inspectionId: "insp-ci-1",
+      id: 1,
       bookingId: "b-2",
       staffId: "a-2",
-      inspectionType: "CheckIn",
-      inspectionAt: "2025-09-28T08:00:00Z",
-      photoUrls: [],
+      inspectionType: "check_in",
+      inspectionDateTime: "2025-09-28T08:00:00Z",
+      photoUrls: "",
       currentStep: 1,
       createdAt: "2025-09-28T08:00:00Z",
       updatedAt: "2025-09-28T08:00:00Z",
@@ -287,12 +312,12 @@ export const mockData = {
 
     // Case 2: Check-in Rejected (step 1) – thiếu giấy tờ
     {
-      inspectionId: "insp-ci-2",
+      id: 2,
       bookingId: "b-1",
       staffId: "a-2",
-      inspectionType: "CheckIn",
-      inspectionAt: "2025-09-28T08:30:00Z",
-      photoUrls: [],
+      inspectionType: "check_in",
+      inspectionDateTime: "2025-09-28T08:30:00Z",
+      photoUrls: "",
       currentStep: 1,
       createdAt: "2025-09-28T08:20:00Z",
       updatedAt: "2025-09-28T08:30:00Z",
@@ -302,15 +327,15 @@ export const mockData = {
 
     // Case 3: Check-in Pending (step 2) – đang làm checklist
     {
-      inspectionId: "insp-ci-3",
+      id: 3,
       bookingId: "b-4",
       staffId: "a-2",
-      inspectionType: "CheckIn",
-      inspectionAt: "2025-09-28T09:00:00Z",
-      odometerKm: 1910,
+      inspectionType: "check_in",
+      inspectionDateTime: "2025-09-28T09:00:00Z",
+      odometerReading: 1910,
       batteryLevel: 92,
       vehicleConditionNotes: "Đang kiểm tra xe, chờ đủ ảnh",
-      photoUrls: ["https://mock.cloudinary.com/ci-step2-1.jpg"],
+      photoUrls: "https://mock.cloudinary.com/ci-step2-1.jpg",
       currentStep: 2,
       createdAt: "2025-09-28T08:50:00Z",
       updatedAt: "2025-09-28T09:00:00Z",
@@ -319,19 +344,17 @@ export const mockData = {
 
     // Case 4: Check-in Rejected (step 2) – hủy booking do hư hỏng
     {
-      inspectionId: "insp-ci-4",
+      id: 4,
       bookingId: "b-5",
       staffId: "a-2",
-      inspectionType: "CheckIn",
-      inspectionAt: "2025-09-28T09:30:00Z",
-      odometerKm: 5205,
+      inspectionType: "check_in",
+      inspectionDateTime: "2025-09-28T09:30:00Z",
+      odometerReading: 5205,
       batteryLevel: 28,
       vehicleConditionNotes: "Phát hiện hư hỏng nặng",
       damageNotes: "Vỡ gương + trầy đầu xe",
-      photoUrls: [
-        "https://mock.cloudinary.com/ci-step2-damage-1.jpg",
-        "https://mock.cloudinary.com/ci-step2-damage-2.jpg",
-      ],
+      photoUrls:
+        "https://mock.cloudinary.com/ci-step2-damage-1.jpg,https://mock.cloudinary.com/ci-step2-damage-2.jpg",
       currentStep: 2,
       createdAt: "2025-09-28T09:20:00Z",
       updatedAt: "2025-09-28T09:30:00Z",
@@ -341,13 +364,12 @@ export const mockData = {
 
     // Case 5: Check-in Pending (step 3) – contract waiting signature
     {
-      inspectionId: "insp-ci-5",
+      id: 5,
       bookingId: "b-2",
-      contractId: "contract-waiting-signature",
       staffId: "a-2",
-      inspectionType: "CheckIn",
-      inspectionAt: "2025-09-28T10:00:00Z",
-      photoUrls: ["https://mock.cloudinary.com/ci-step3-1.jpg"],
+      inspectionType: "check_in",
+      inspectionDateTime: "2025-09-28T10:00:00Z",
+      photoUrls: "https://mock.cloudinary.com/ci-step3-1.jpg",
       currentStep: 3,
       createdAt: "2025-09-28T09:50:00Z",
       updatedAt: "2025-09-28T10:00:00Z",
@@ -357,13 +379,12 @@ export const mockData = {
 
     // Case 6: Check-in Rejected (step 3) – contract voided
     {
-      inspectionId: "insp-ci-6",
+      id: 6,
       bookingId: "b-1",
-      contractId: "contract-voided",
       staffId: "a-2",
-      inspectionType: "CheckIn",
-      inspectionAt: "2025-09-28T10:30:00Z",
-      photoUrls: ["https://mock.cloudinary.com/ci-step3-voided.jpg"],
+      inspectionType: "check_in",
+      inspectionDateTime: "2025-09-28T10:30:00Z",
+      photoUrls: "https://mock.cloudinary.com/ci-step3-voided.jpg",
       currentStep: 3,
       createdAt: "2025-09-28T10:20:00Z",
       updatedAt: "2025-09-28T10:30:00Z",
@@ -373,13 +394,12 @@ export const mockData = {
 
     // Case 7: Check-in Pending (step 4) – chờ payment
     {
-      inspectionId: "insp-ci-7",
+      id: 7,
       bookingId: "b-4",
-      contractId: "contract-active-1",
       staffId: "a-2",
-      inspectionType: "CheckIn",
-      inspectionAt: "2025-09-28T11:00:00Z",
-      photoUrls: ["https://mock.cloudinary.com/ci-step4-1.jpg"],
+      inspectionType: "check_in",
+      inspectionDateTime: "2025-09-28T11:00:00Z",
+      photoUrls: "https://mock.cloudinary.com/ci-step4-1.jpg",
       currentStep: 4,
       createdAt: "2025-09-28T10:50:00Z",
       updatedAt: "2025-09-28T11:00:00Z",
@@ -389,16 +409,15 @@ export const mockData = {
 
     // Case 8: Check-in Approved (done)
     {
-      inspectionId: "insp-ci-8",
+      id: 8,
       bookingId: "b-2",
-      contractId: "contract-active-2",
       staffId: "a-2",
-      inspectionType: "CheckIn",
-      inspectionAt: "2025-09-28T11:30:00Z",
-      odometerKm: 865,
+      inspectionType: "check_in",
+      inspectionDateTime: "2025-09-28T11:30:00Z",
+      odometerReading: 865,
       batteryLevel: 70,
       vehicleConditionNotes: "Hoàn tất, đã thanh toán",
-      photoUrls: ["https://mock.cloudinary.com/ci-done.jpg"],
+      photoUrls: "https://mock.cloudinary.com/ci-done.jpg",
       currentStep: 4,
       createdAt: "2025-09-28T11:20:00Z",
       updatedAt: "2025-09-28T11:30:00Z",
@@ -407,16 +426,15 @@ export const mockData = {
 
     // Case 9: Check-out Pending – step 2
     {
-      inspectionId: "insp-co-1",
+      id: 9,
       bookingId: "b-3",
-      contractId: "contract-completed-1",
       staffId: "a-2",
-      inspectionType: "CheckOut",
-      inspectionAt: "2025-09-28T18:00:00Z",
-      odometerKm: 3490,
+      inspectionType: "check_out",
+      inspectionDateTime: "2025-09-28T18:00:00Z",
+      odometerReading: 3490,
       batteryLevel: 22,
       vehicleConditionNotes: "Chuẩn bị trả xe, chờ xác nhận",
-      photoUrls: ["https://mock.cloudinary.com/co-step2-1.jpg"],
+      photoUrls: "https://mock.cloudinary.com/co-step2-1.jpg",
       currentStep: 2,
       createdAt: "2025-09-28T17:50:00Z",
       updatedAt: "2025-09-28T18:00:00Z",
@@ -425,16 +443,15 @@ export const mockData = {
 
     // Case 10: Check-out Approved – hoàn tất
     {
-      inspectionId: "insp-co-2",
+      id: 10,
       bookingId: "b-3",
-      contractId: "contract-completed-1",
       staffId: "a-2",
-      inspectionType: "CheckOut",
-      inspectionAt: "2025-09-28T18:30:00Z",
-      odometerKm: 3500,
+      inspectionType: "check_out",
+      inspectionDateTime: "2025-09-28T18:30:00Z",
+      odometerReading: 3500,
       batteryLevel: 20,
       vehicleConditionNotes: "Đã kiểm tra, hoàn tất trả xe",
-      photoUrls: ["https://mock.cloudinary.com/co-done.jpg"],
+      photoUrls: "https://mock.cloudinary.com/co-done.jpg",
       currentStep: 2,
       createdAt: "2025-09-28T18:10:00Z",
       updatedAt: "2025-09-28T18:30:00Z",
@@ -446,8 +463,9 @@ export const mockData = {
   contracts: [
     // Demo set để test đầy đủ UI ContractActions
     {
-      contractId: "contract-draft-1",
+      id: "contract-draft-1",
       bookingId: "booking-101",
+      createdByStaffId: "a-2",
       termsAndConditions: "Demo draft contract",
       startDate: "2025-09-27T09:00:00Z",
       endDate: "2025-09-30T09:00:00Z",
@@ -458,8 +476,9 @@ export const mockData = {
       signedByStaff: false,
     },
     {
-      contractId: "contract-active-wait-renter",
+      id: "contract-active-wait-renter",
       bookingId: "booking-102",
+      createdByStaffId: "a-2",
       termsAndConditions: "Waiting renter to sign",
       startDate: "2025-09-28T10:00:00Z",
       endDate: "2025-09-29T10:00:00Z",
@@ -470,8 +489,9 @@ export const mockData = {
       signedByStaff: false,
     },
     {
-      contractId: "contract-active-staff-sign",
+      id: "contract-active-staff-sign",
       bookingId: "booking-103",
+      createdByStaffId: "a-2",
       termsAndConditions: "Renter signed, waiting staff",
       startDate: "2025-09-28T12:00:00Z",
       endDate: "2025-09-29T12:00:00Z",
@@ -482,8 +502,9 @@ export const mockData = {
       signedByStaff: false,
     },
     {
-      contractId: "contract-active-done",
+      id: "contract-active-done",
       bookingId: "booking-104",
+      createdByStaffId: "a-2",
       termsAndConditions: "Both signed",
       startDate: "2025-09-28T15:00:00Z",
       endDate: "2025-09-29T15:00:00Z",
@@ -494,8 +515,9 @@ export const mockData = {
       signedByStaff: true,
     },
     {
-      contractId: "contract-completed-1",
+      id: "contract-completed-1",
       bookingId: "booking-105",
+      createdByStaffId: "a-2",
       termsAndConditions: "Completed contract",
       startDate: "2025-09-26T08:00:00Z",
       endDate: "2025-09-27T08:00:00Z",
@@ -507,8 +529,9 @@ export const mockData = {
       signedAt: "2025-09-26T08:30:00Z",
     },
     {
-      contractId: "contract-voided-1",
+      id: "contract-voided-1",
       bookingId: "booking-106",
+      createdByStaffId: "a-2",
       termsAndConditions: "Voided contract",
       startDate: "2025-09-25T08:00:00Z",
       endDate: "2025-09-26T08:00:00Z",
@@ -522,8 +545,9 @@ export const mockData = {
     },
     // Case α: Draft contract (chưa ký)
     {
-      contractId: "contract-alpha-draft",
+      id: "contract-alpha-draft",
       bookingId: "b-2",
+      createdByStaffId: "a-2",
       termsAndConditions: "Điều khoản mẫu...",
       startDate: "2025-10-01",
       endDate: "2025-10-01",
@@ -535,8 +559,9 @@ export const mockData = {
     },
     // Case β: Active contract (cả hai bên ký xong)
     {
-      contractId: "contract-active-1",
+      id: "contract-active-1",
       bookingId: "b-4",
+      createdByStaffId: "a-2",
       termsAndConditions: "Điều khoản thuê xe...",
       startDate: "2025-10-05",
       endDate: "2025-10-05",
@@ -549,8 +574,9 @@ export const mockData = {
     },
     // Case β (khác): Active contract (cho Case 8)
     {
-      contractId: "contract-active-2",
+      id: "contract-active-2",
       bookingId: "b-2",
+      createdByStaffId: "a-2",
       termsAndConditions: "Điều khoản thuê xe...",
       startDate: "2025-10-01",
       endDate: "2025-10-01",
@@ -563,8 +589,9 @@ export const mockData = {
     },
     // Case γ: Voided contract (bị hủy trong lúc ký)
     {
-      contractId: "contract-voided",
+      id: "contract-voided",
       bookingId: "b-1",
+      createdByStaffId: "a-2",
       termsAndConditions: "Điều khoản mẫu...",
       startDate: "2025-09-28",
       endDate: "2025-09-28",
@@ -578,8 +605,9 @@ export const mockData = {
     },
     // Case δ: Completed contract (đã kết thúc thuê xe)
     {
-      contractId: "contract-completed-1",
+      id: "contract-completed-1",
       bookingId: "b-3",
+      createdByStaffId: "a-2",
       termsAndConditions: "Điều khoản hoàn tất...",
       startDate: "2025-09-20",
       endDate: "2025-09-20",
@@ -592,8 +620,9 @@ export const mockData = {
     },
     // Case 5 hỗ trợ: waiting signature (renter ký trước)
     {
-      contractId: "contract-waiting-signature",
+      id: "contract-waiting-signature",
       bookingId: "b-2",
+      createdByStaffId: "a-2",
       termsAndConditions: "Điều khoản mẫu...",
       startDate: "2025-10-01",
       endDate: "2025-10-01",
@@ -605,8 +634,9 @@ export const mockData = {
     },
     // New: Active contract belonging to renter r-1, renter chưa ký (để test nút "Ký kết")
     {
-      contractId: "contract-active-wait-renter-r1",
+      id: "contract-active-wait-renter-r1",
       bookingId: "b-6",
+      createdByStaffId: "a-2",
       termsAndConditions: "Điều khoản chờ renter ký...",
       startDate: "2025-10-12T09:00:00Z",
       endDate: "2025-10-12T18:00:00Z",
@@ -622,59 +652,71 @@ export const mockData = {
   payments: [
     // Case i: Pending (chưa thanh toán) – cho Case 7
     {
-      paymentId: "pay-pending-1",
+      id: 1,
       contractId: "contract-active-1",
       amount: 550000,
       currency: "VND",
       paymentType: "RentalFee",
       paymentMethod: "VNPay",
+      paymentDate: "2025-09-28T11:00:00Z",
       status: "Pending",
+      createdAt: "2025-09-28T11:00:00Z",
+      updatedAt: "2025-09-28T11:00:00Z",
     },
     // Case ii: Paid (VNPay) – cho Case 8
     {
-      paymentId: "pay-paid-vnpay-1",
+      id: 2,
       contractId: "contract-active-2",
       amount: 400000,
       currency: "VND",
       paymentType: "RentalFee",
       paymentMethod: "VNPay",
       transactionId: "vnpay-20250928-0001",
-      paidAt: "2025-09-28T11:25:00Z",
+      paymentDate: "2025-09-28T11:25:00Z",
       status: "Paid",
+      createdAt: "2025-09-28T11:00:00Z",
+      updatedAt: "2025-09-28T11:25:00Z",
     },
     // Case iii: Paid (Cash)
     {
-      paymentId: "pay-paid-cash-1",
+      id: 3,
       contractId: "contract-completed-1",
       amount: 450000,
       currency: "VND",
       paymentType: "RentalFee",
       paymentMethod: "Cash",
-      paidAt: "2025-09-28T18:25:00Z",
+      paymentDate: "2025-09-28T18:25:00Z",
       status: "Paid",
+      createdAt: "2025-09-28T18:00:00Z",
+      updatedAt: "2025-09-28T18:25:00Z",
     },
     // Case iv: Failed (VNPay lỗi)
     {
-      paymentId: "pay-failed-vnpay-1",
+      id: 4,
       contractId: "contract-active-1",
       amount: 550000,
       currency: "VND",
       paymentType: "RentalFee",
       paymentMethod: "VNPay",
       transactionId: "vnpay-20250928-ERR",
+      paymentDate: "2025-09-28T11:30:00Z",
       status: "Failed",
+      createdAt: "2025-09-28T11:00:00Z",
+      updatedAt: "2025-09-28T11:30:00Z",
     },
     // Case v: Refunded (khi booking bị hủy)
     {
-      paymentId: "pay-refund-1",
+      id: 5,
       contractId: "contract-voided",
       amount: 300000,
       currency: "VND",
       paymentType: "Deposit",
       paymentMethod: "VNPay",
       transactionId: "vnpay-20250928-REF",
-      paidAt: "2025-09-28T10:10:00Z",
+      paymentDate: "2025-09-28T10:10:00Z",
       status: "Refunded",
+      createdAt: "2025-09-28T10:00:00Z",
+      updatedAt: "2025-09-28T10:10:00Z",
     },
   ] as Payment[],
 };

@@ -1,16 +1,7 @@
 import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Renter } from './renter.entity';
-
-export enum LicenseType {
-  Car = 'Car',
-  Motorcycle = 'Motorcycle',
-}
-
-export enum VerifiedStatus {
-  Pending = 'Pending',
-  Verified = 'Verified',
-  Rejected = 'Rejected',
-}
+import { LicenseType } from '@/packages/types/documents/driver-license';
+import { VerificationStatus } from '@/packages/types/common/shared-enums';
 
 @Entity('DriverLicense')
 export class DriverLicense {
@@ -54,7 +45,7 @@ export class DriverLicense {
   IssuedBy: string;
 
   @Column({ name: 'VerifiedStatus', type: 'nvarchar', length: 255 })
-  VerifiedStatus: VerifiedStatus;
+  VerifiedStatus: VerificationStatus;
 
   @Column({
     name: 'VerifiedAt',

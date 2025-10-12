@@ -1,16 +1,5 @@
 // Export tất cả types
-export * from "./types/account";
-export * from "./types/booking";
-export * from "./types/bookingHistory";
-export * from "./types/contract";
-export * from "./types/driverLicense";
-export * from "./types/enum";
-export * from "./types/payment";
-export * from "./types/renter";
-export * from "./types/rentalLocation";
-export * from "./types/vehicle";
-export * from "./types/vehicleInspection";
-export * from "./types/settlement";
+export * from "./types";
 
 // Export tất cả services
 export * from "./services/mock-service";
@@ -18,3 +7,26 @@ export * from "./services/mock-service";
 // Export tất cả utils
 export * from "./utils/datetime";
 export * from "./utils/settlement-calculator";
+
+// Export API client và auth utilities
+export {
+  default as apiClient,
+  apiGet,
+  apiPost,
+  apiPut,
+  apiPatch,
+  apiDelete,
+  apiUpload,
+  apiDownload,
+} from "./lib/api-client";
+export {
+  setAuthToken,
+  getAuthToken,
+  removeAuthToken,
+  setRefreshToken,
+  getRefreshToken,
+  removeRefreshToken,
+  clearAllTokens,
+  hasAuthToken,
+  getBearerToken,
+} from "./lib/auth-token";

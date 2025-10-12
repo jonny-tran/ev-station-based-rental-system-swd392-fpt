@@ -18,7 +18,10 @@ import { CloudinaryProvider } from '../third-party/cloudinary/cloudinary.config'
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }), // load .env
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: ['../../.env.local', '../../.env', '.env'],
+    }), // load .env
     TypeOrmModule.forRootAsync({
       useFactory: () => ({
         type: 'mssql',

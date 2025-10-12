@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { IsOptional, IsString, IsInt, Min, Max, IsEnum } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { InspectionStatus } from '../entities/vehicle-inspection.entity';
+import { VehicleInspectionStatus } from '@/packages/types/vehicle/vehicle-inspection';
 
 export class CheckinSessionListDto {
   @ApiProperty({
@@ -34,12 +33,13 @@ export class CheckinSessionListDto {
 
   @ApiProperty({
     description: 'Filter by inspection status',
-    enum: InspectionStatus,
+    enum: Object.values(VehicleInspectionStatus),
+    enumName: 'VehicleInspectionStatus',
     required: false,
   })
   @IsOptional()
-  @IsEnum(InspectionStatus)
-  status?: InspectionStatus;
+  @IsEnum(VehicleInspectionStatus)
+  status?: VehicleInspectionStatus;
 
   @ApiProperty({
     description: 'Search by booking ID, vehicle model, or renter name',

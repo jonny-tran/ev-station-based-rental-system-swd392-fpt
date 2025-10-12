@@ -1,9 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  InspectionStatus,
-  InspectionType,
-} from '../entities/vehicle-inspection.entity';
+  VehicleInspectionStatus,
+  VehicleInspectionType,
+} from '@/packages/types/vehicle/vehicle-inspection';
 
 export class BookingInfoDto {
   @ApiProperty()
@@ -102,14 +102,20 @@ export class CheckinSessionInfoDto {
   @ApiProperty()
   staffId: string;
 
-  @ApiProperty({ enum: InspectionType })
-  inspectionType: InspectionType;
+  @ApiProperty({
+    enum: Object.values(VehicleInspectionType),
+    enumName: 'VehicleInspectionType',
+  })
+  inspectionType: VehicleInspectionType;
 
   @ApiProperty()
   currentStep: number;
 
-  @ApiProperty({ enum: InspectionStatus })
-  status: InspectionStatus;
+  @ApiProperty({
+    enum: Object.values(VehicleInspectionStatus),
+    enumName: 'VehicleInspectionStatus',
+  })
+  status: VehicleInspectionStatus;
 
   @ApiProperty()
   createdAt: Date;
@@ -127,8 +133,11 @@ export class CheckinSessionListItemDto {
   @ApiProperty()
   inspectionId: number;
 
-  @ApiProperty({ enum: InspectionStatus })
-  status: InspectionStatus;
+  @ApiProperty({
+    enum: Object.values(VehicleInspectionStatus),
+    enumName: 'VehicleInspectionStatus',
+  })
+  status: VehicleInspectionStatus;
 
   @ApiProperty()
   currentStep: number;

@@ -1,3 +1,8 @@
+/**
+ * Settlement Types
+ * Business logic types for rental settlement calculations
+ */
+
 export type ExtraChargeCategory =
   | "OverMileage"
   | "Overtime"

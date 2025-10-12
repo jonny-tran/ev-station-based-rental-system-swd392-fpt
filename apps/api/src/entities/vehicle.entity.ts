@@ -1,5 +1,6 @@
 import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { RentalLocation } from './rentalLocation.entity';
+import { VehicleStatus } from '@/packages/types/vehicle/vehicle-status';
 
 @Entity('Vehicle')
 export class Vehicle {
@@ -58,7 +59,7 @@ export class Vehicle {
   LastServiceDate: Date;
 
   @Column({ name: 'Status', type: 'nvarchar', length: 255 })
-  Status: 'Available' | 'Rented' | 'Maintenance' | 'Charging';
+  Status: VehicleStatus;
 
   // Relations
   @ManyToOne(() => RentalLocation)

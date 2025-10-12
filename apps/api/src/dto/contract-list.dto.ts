@@ -1,14 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString, IsEnum, IsInt, Min } from 'class-validator';
 import { Transform } from 'class-transformer';
-
-export enum ContractStatusFilter {
-  Draft = 'Draft',
-  Active = 'Active',
-  Completed = 'Completed',
-  Terminated = 'Terminated',
-  Voided = 'Voided',
-}
+import { ContractStatus } from '@/packages/types/contract/contract-status';
 
 export class ContractListQueryDto {
   @ApiProperty({
@@ -37,12 +31,13 @@ export class ContractListQueryDto {
 
   @ApiProperty({
     description: 'Filter by contract status',
-    enum: ContractStatusFilter,
+    enum: Object.values(ContractStatus),
+    enumName: 'ContractStatus',
     required: false,
   })
   @IsOptional()
-  @IsEnum(ContractStatusFilter)
-  status?: ContractStatusFilter;
+  @IsEnum(Object.values(ContractStatus))
+  status?: ContractStatus;
 
   @ApiProperty({
     description: 'Search by booking ID, vehicle license plate, or renter name',

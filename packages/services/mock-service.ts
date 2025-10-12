@@ -1,18 +1,16 @@
 import { Booking } from "../types/booking";
 import { Vehicle } from "../types/vehicle";
-import { Renter } from "../types/renter";
-import { Account } from "../types/account";
-import { RentalLocation } from "../types/rentalLocation";
-import { VehicleInspection } from "../types/vehicleInspection";
+import { Renter } from "../types/rental";
+import { Account } from "../types/auth";
+import { RentalLocation } from "../types/rental";
+import { VehicleInspection } from "../types/vehicle";
 import { mockData } from "./mock-data";
-import { DriverLicense } from "../types/driverLicense";
+import { DriverLicense } from "../types/documents";
 import { Contract } from "../types/contract";
 import { Payment } from "../types/payment";
-import {
-  ContractStatus,
-  PaymentStatus,
-  VehicleInspectionStatus,
-} from "../types/enum";
+import { ContractStatus } from "../types/contract";
+import { PaymentStatus, PaymentType, PaymentMethod } from "../types/payment";
+import { VehicleInspectionStatus } from "../types/vehicle";
 import {
   SettlementConfig,
   SettlementInput,
@@ -31,28 +29,28 @@ export const mockService = {
 
   // Lấy chi tiết booking
   getBookingById: (bookingId: string): Booking | undefined => {
-    return mockData.bookings.find((booking) => booking.bookingId === bookingId);
+    return mockData.bookings.find((booking) => booking.id === bookingId);
   },
 
   // Lấy thông tin xe
   getVehicleById: (vehicleId: string): Vehicle | undefined => {
-    return mockData.vehicles.find((vehicle) => vehicle.vehicleId === vehicleId);
+    return mockData.vehicles.find((vehicle) => vehicle.id === vehicleId);
   },
 
   // Lấy thông tin renter
   getRenterById: (renterId: string): Renter | undefined => {
-    return mockData.renters.find((renter) => renter.renterId === renterId);
+    return mockData.renters.find((renter) => renter.id === renterId);
   },
 
   // Lấy thông tin account
   getAccountById: (accountId: string): Account | undefined => {
-    return mockData.accounts.find((account) => account.accountId === accountId);
+    return mockData.accounts.find((account) => account.id === accountId);
   },
 
   // Lấy thông tin địa điểm thuê
   getRentalLocationById: (locationId: string): RentalLocation | undefined => {
     return mockData.rentalLocations.find(
-      (location) => location.locationId === locationId
+      (location) => location.id === locationId
     );
   },
 
@@ -68,23 +66,22 @@ export const mockService = {
 
   // Lấy vehicle inspection theo ID
   getVehicleInspectionById: (
-    inspectionId: string
+    inspectionId: number
   ): VehicleInspection | undefined => {
     return mockData.vehicleInspections.find(
-      (inspection) => inspection.inspectionId === inspectionId
+      (inspection) => inspection.id === inspectionId
     );
   },
 
-  // Tìm phiên check-in theo bookingId hoặc contractId (phục vụ điều hướng soạn hợp đồng)
+  // Tìm phiên check-in theo bookingId (phục vụ điều hướng soạn hợp đồng)
   getCheckInSessionByBookingOrContract: (args: {
     bookingId?: string;
     contractId?: string;
   }): VehicleInspection | undefined => {
-    const { bookingId, contractId } = args;
+    const { bookingId } = args;
     return mockData.vehicleInspections.find((insp) => {
       const okBooking = bookingId ? insp.bookingId === bookingId : true;
-      const okContract = contractId ? insp.contractId === contractId : true;
-      return okBooking && okContract && insp.inspectionType === "CheckIn";
+      return okBooking && insp.inspectionType === "check_in";
     });
   },
 
@@ -104,9 +101,7 @@ export const mockService = {
 
   // Contracts
   getContractById: (contractId: string): Contract | undefined => {
-    return mockData.contracts?.find(
-      (c: Contract) => c.contractId === contractId
-    );
+    return mockData.contracts?.find((c: Contract) => c.id === contractId);
   },
 
   // Lấy danh sách hợp đồng có filter + search + pagination
@@ -146,7 +141,7 @@ export const mockService = {
     const q = keyword.trim().toLowerCase();
     if (q) {
       items = items.filter((c) =>
-        [c.contractId, c.bookingId].some((v) => v.toLowerCase().includes(q))
+        [c.id, c.bookingId].some((v) => v.toLowerCase().includes(q))
       );
     }
 
@@ -177,7 +172,7 @@ export const mockService = {
     // Lấy bookingId thuộc renter
     const renterBookingIds = mockData.bookings
       .filter((b) => b.renterId === renterId)
-      .map((b) => b.bookingId);
+      .map((b) => b.id);
 
     let items = (mockData.contracts as Contract[]).filter((c) =>
       renterBookingIds.includes(c.bookingId)
@@ -195,7 +190,7 @@ export const mockService = {
     const q = keyword.trim().toLowerCase();
     if (q) {
       items = items.filter((c) =>
-        [c.contractId, c.bookingId].some((v) => v.toLowerCase().includes(q))
+        [c.id, c.bookingId].some((v) => v.toLowerCase().includes(q))
       );
     }
 
@@ -209,7 +204,7 @@ export const mockService = {
   // Staff ký hợp đồng
   signContractByStaff: (contractId: string): Contract | undefined => {
     const contract = mockData.contracts.find(
-      (c: Contract) => c.contractId === contractId
+      (c: Contract) => c.id === contractId
     );
     if (!contract) return undefined;
     if (contract.status === ContractStatus.Voided) return contract;
@@ -232,7 +227,7 @@ export const mockService = {
   // Renter ký hợp đồng
   signContractByRenter: (contractId: string): Contract | undefined => {
     const contract = mockData.contracts.find(
-      (c: Contract) => c.contractId === contractId
+      (c: Contract) => c.id === contractId
     );
     if (!contract) return undefined;
     if (contract.status === ContractStatus.Voided) return contract;
@@ -259,19 +254,17 @@ export const mockService = {
     );
   },
 
-  getPaymentById: (paymentId: string): Payment | undefined => {
-    return (mockData.payments as Payment[]).find(
-      (p) => p.paymentId === paymentId
-    );
+  getPaymentById: (paymentId: number): Payment | undefined => {
+    return (mockData.payments as Payment[]).find((p) => p.id === paymentId);
   },
 
   // ====== Returns / Check-out helpers ======
   updateCheckoutInspection: (
-    inspectionId: string,
+    inspectionId: number,
     payload: Partial<
       Pick<
         VehicleInspection,
-        | "odometerKm"
+        | "odometerReading"
         | "batteryLevel"
         | "vehicleConditionNotes"
         | "damageNotes"
@@ -279,11 +272,9 @@ export const mockService = {
       >
     >
   ): VehicleInspection | undefined => {
-    const insp = mockData.vehicleInspections.find(
-      (i) => i.inspectionId === inspectionId
-    );
+    const insp = mockData.vehicleInspections.find((i) => i.id === inspectionId);
     if (!insp) return undefined;
-    if (insp.inspectionType !== "CheckOut") return insp;
+    if (insp.inspectionType !== "check_out") return insp;
     Object.assign(insp, payload);
     insp.updatedAt = new Date().toISOString();
     return insp;
@@ -299,45 +290,49 @@ export const mockService = {
   createExtraChargePayment: (params: {
     contractId: string;
     amount: number;
-    method: "VNPay" | "Cash";
+    method: PaymentMethod;
   }): Payment => {
     const payment: Payment = {
-      paymentId: `pay-${Date.now()}`,
+      id: Date.now(),
       contractId: params.contractId,
       amount: params.amount,
       currency: "VND",
-      paymentType: "Penalty",
+      paymentType: PaymentType.Penalty,
       paymentMethod: params.method,
-      status: params.method === "Cash" ? "Paid" : "Pending",
-      paidAt: params.method === "Cash" ? new Date().toISOString() : undefined,
-    } as Payment;
+      status:
+        params.method === PaymentMethod.Cash
+          ? PaymentStatus.Paid
+          : PaymentStatus.Pending,
+      paymentDate:
+        params.method === PaymentMethod.Cash
+          ? new Date().toISOString()
+          : new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
     (mockData.payments as Payment[]).push(payment);
     return payment;
   },
 
   confirmVNPayPayment: (
-    paymentId: string,
+    paymentId: number,
     ok: boolean,
     transactionId?: string
   ): Payment | undefined => {
-    const p = (mockData.payments as Payment[]).find(
-      (x) => x.paymentId === paymentId
-    );
+    const p = (mockData.payments as Payment[]).find((x) => x.id === paymentId);
     if (!p) return undefined;
-    if (p.paymentMethod !== "VNPay") return p;
-    p.status = ok ? ("Paid" as PaymentStatus) : ("Failed" as PaymentStatus);
-    p.paidAt = ok ? new Date().toISOString() : p.paidAt;
+    if (p.paymentMethod !== PaymentMethod.VNPay) return p;
+    p.status = ok ? PaymentStatus.Paid : PaymentStatus.Failed;
+    p.paymentDate = ok ? new Date().toISOString() : p.paymentDate;
     p.transactionId = transactionId || p.transactionId;
     return p;
   },
 
-  finalizeReturn: (inspectionId: string): VehicleInspection | undefined => {
-    const insp = mockData.vehicleInspections.find(
-      (i) => i.inspectionId === inspectionId
-    );
+  finalizeReturn: (inspectionId: number): VehicleInspection | undefined => {
+    const insp = mockData.vehicleInspections.find((i) => i.id === inspectionId);
     if (!insp) return undefined;
-    if (insp.inspectionType !== "CheckOut") return insp;
-    insp.status = "Completed" as VehicleInspectionStatus;
+    if (insp.inspectionType !== "check_out") return insp;
+    insp.status = VehicleInspectionStatus.Completed;
     insp.updatedAt = new Date().toISOString();
     return insp;
   },

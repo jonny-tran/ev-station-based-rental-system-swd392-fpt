@@ -1,17 +1,5 @@
 import { Entity, Column } from 'typeorm';
-
-export enum AccountRole {
-  Admin = 'Admin',
-  Staff = 'Staff',
-  Renter = 'Renter',
-}
-
-export enum AccountStatus {
-  Active = 'Active',
-  Inactive = 'Inactive',
-  Locked = 'Locked',
-  Pending = 'Pending',
-}
+import { UserRole, AccountStatus } from '@/packages/types/common/shared-enums';
 
 @Entity('Account')
 export class Account {
@@ -35,10 +23,10 @@ export class Account {
   avatarUrl: string;
 
   @Column({ name: 'Role', type: 'nvarchar', length: 255 })
-  role: string;
+  role: UserRole;
 
   @Column({ name: 'Status', type: 'nvarchar', length: 255 })
-  status: string;
+  status: AccountStatus;
 
   @Column({ name: 'CreatedAt', type: 'datetime2' })
   createdAt: Date;

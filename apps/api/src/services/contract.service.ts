@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import {
   Injectable,
   NotFoundException,
@@ -8,7 +9,8 @@ import {
 } from '@nestjs/common';
 import { ContractRepository } from '../repositories/contract.repository';
 import { CheckinSessionRepository } from '../repositories/checkin-session.repository';
-import { Contract, ContractStatus } from '../entities/contract.entity';
+import { Contract } from '../entities/contract.entity';
+import { ContractStatus } from '@/packages/types/contract/contract-status';
 import { VehicleInspection } from '../entities/vehicle-inspection.entity';
 import { ContractDetailsResponseDto } from '../dto/contract-details-response.dto';
 import { SubmitContractDto } from '../dto/submit-contract.dto';

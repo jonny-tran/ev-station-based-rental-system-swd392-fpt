@@ -1,17 +1,9 @@
 import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Booking } from './booking.entity';
-
-export enum InspectionType {
-  CheckIn = 'check_in',
-  CheckOut = 'check_out',
-}
-
-export enum InspectionStatus {
-  Pending = 'Pending',
-  Approved = 'Approved',
-  Completed = 'Completed',
-  Rejected = 'Rejected',
-}
+import {
+  VehicleInspectionType,
+  VehicleInspectionStatus,
+} from '@/packages/types/vehicle/vehicle-inspection';
 
 @Entity('VehicleInspectionDatTT')
 export class VehicleInspection {
@@ -30,7 +22,7 @@ export class VehicleInspection {
   BookingID: string;
 
   @Column({ name: 'InspectionType', type: 'nvarchar', length: 255 })
-  InspectionType: InspectionType;
+  InspectionType: VehicleInspectionType;
 
   @Column({ name: 'InspectionDateTime', type: 'datetime2' })
   InspectionDateTime: Date;
@@ -81,7 +73,7 @@ export class VehicleInspection {
   UpdatedAt: Date;
 
   @Column({ name: 'Status', type: 'nvarchar', length: 255 })
-  Status: InspectionStatus;
+  Status: VehicleInspectionStatus;
 
   @Column({ name: 'SubStatus', type: 'nvarchar', length: 50, nullable: true })
   SubStatus: string;

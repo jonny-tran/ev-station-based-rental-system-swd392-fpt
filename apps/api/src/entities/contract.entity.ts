@@ -1,14 +1,7 @@
 import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Booking } from './booking.entity';
 import { Staff } from './staff.entity';
-
-export enum ContractStatus {
-  Draft = 'Draft',
-  Active = 'Active',
-  Completed = 'Completed',
-  Terminated = 'Terminated',
-  Voided = 'Voided',
-}
+import { ContractStatus } from '@/packages/types/contract/contract-status';
 
 @Entity('ContractDatTT')
 export class Contract {

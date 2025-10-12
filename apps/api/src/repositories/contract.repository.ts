@@ -1,8 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder } from 'typeorm';
-import { Contract, ContractStatus } from '../entities/contract.entity';
+import { Contract } from '../entities/contract.entity';
+import { ContractStatus } from '@/packages/types/contract/contract-status';
 import { ContractListQueryDto } from '../dto/contract-list.dto';
 
 @Injectable()
