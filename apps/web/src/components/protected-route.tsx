@@ -1,19 +1,18 @@
 "use client";
 
-import { useAuth, UserRole } from "@/contexts/auth-context";
+import { useAuth } from "@/stores/auth.store";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  allowedRoles?: UserRole[];
+  allowedRoles?: string[];
   redirectTo?: string;
 }
 
 export function ProtectedRoute({
   children,
   allowedRoles,
-  redirectTo,
 }: ProtectedRouteProps) {
   const { user, isLoading, isAuthenticated } = useAuth();
   const router = useRouter();
@@ -27,9 +26,9 @@ export function ProtectedRoute({
 
       if (allowedRoles && user && !allowedRoles.includes(user.role)) {
         // Redirect to appropriate dashboard based on user role
-        if (user.role === "staff") {
+        if (user.role === "Staff") {
           router.push("/staff");
-        } else if (user.role === "renter") {
+        } else if (user.role === "Renter") {
           router.push("/dashboard");
         }
         return;
@@ -59,11 +58,11 @@ export function ProtectedRoute({
 
 // Convenience components for specific roles
 export function StaffOnly({ children }: { children: React.ReactNode }) {
-  return <ProtectedRoute allowedRoles={["staff"]}>{children}</ProtectedRoute>;
+  return <ProtectedRoute allowedRoles={["Staff"]}>{children}</ProtectedRoute>;
 }
 
 export function RenterOnly({ children }: { children: React.ReactNode }) {
-  return <ProtectedRoute allowedRoles={["renter"]}>{children}</ProtectedRoute>;
+  return <ProtectedRoute allowedRoles={["Renter"]}>{children}</ProtectedRoute>;
 }
 
 export function AuthenticatedOnly({ children }: { children: React.ReactNode }) {

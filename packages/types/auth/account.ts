@@ -58,7 +58,7 @@ export interface UpdateAccountRequest {
  * Login Request
  */
 export interface LoginRequest {
-  email: string;
+  emailOrPhone: string;
   password: string;
 }
 
@@ -66,9 +66,45 @@ export interface LoginRequest {
  * Login Response
  */
 export interface LoginResponse {
-  token: string;
-  refreshToken?: string;
-  user: AccountPublic;
+  success: boolean;
+  message: string;
+  data: {
+    accessToken: string;
+    user: {
+      accountId: string;
+      fullName: string;
+      role: string;
+    };
+  };
+}
+
+/**
+ * Auth Info Response (for /auth/me endpoint)
+ */
+export interface AuthInfoResponse {
+  success: boolean;
+  message: string;
+  data: {
+    accountId: string;
+    fullName: string;
+    email: string;
+    phoneNumber: string;
+    role: string;
+    status: string;
+    staffId?: string;
+    rentalLocationId?: string;
+    rentalLocation?: {
+      rentalLocationId: string;
+      name: string;
+      address: string;
+      city: string;
+      country: string;
+    };
+    renterId?: string;
+    address?: string;
+    dateOfBirth?: Date;
+    identityNumber?: string;
+  };
 }
 
 /**

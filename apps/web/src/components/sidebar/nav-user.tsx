@@ -1,15 +1,8 @@
 "use client";
 
-import {
-  BadgeCheck,
-  Bell,
-  ChevronsUpDown,
-  CreditCard,
-  LogOut,
-  Sparkles,
-} from "lucide-react";
+import { BadgeCheck, Bell, ChevronsUpDown, LogOut } from "lucide-react";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,10 +18,12 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useAuth } from "@/contexts/auth-context";
+import { useAuth } from "@/stores/auth.store";
+import { useLogout } from "@/hooks/use-logout";
 
 export function NavUser() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
+  const { logout, isLoggingOut } = useLogout();
   const { isMobile } = useSidebar();
 
   if (!user) return null;
@@ -50,10 +45,12 @@ export function NavUser() {
 
   const getRoleDisplayName = (role: string) => {
     switch (role) {
-      case "staff":
-        return "Nhân viên";
-      case "renter":
-        return "Khách hàng";
+      case "Staff":
+        return "Staff";
+      case "Renter":
+        return "Renter";
+      case "Admin":
+        return "Admin";
       default:
         return role;
     }
@@ -70,7 +67,7 @@ export function NavUser() {
             >
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarFallback className="rounded-lg bg-primary text-primary-foreground">
-                  {getInitials(user.name, user.emailOrPhone)}
+                  {getInitials(user.fullName, user.email)}
                 </AvatarFallback>
               </Avatar>
               <div
@@ -78,9 +75,9 @@ export function NavUser() {
                 suppressHydrationWarning={true}
               >
                 <span className="truncate font-medium">
-                  {user.name || "Người dùng"}
+                  {user.fullName || "User"}
                 </span>
-                <span className="truncate text-xs">{user.emailOrPhone}</span>
+                <span className="truncate text-xs">{user.email}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -95,7 +92,7 @@ export function NavUser() {
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarFallback className="rounded-lg bg-primary text-primary-foreground">
-                    {getInitials(user.name, user.emailOrPhone)}
+                    {getInitials(user.fullName, user.email)}
                   </AvatarFallback>
                 </Avatar>
                 <div
@@ -103,9 +100,9 @@ export function NavUser() {
                   suppressHydrationWarning={true}
                 >
                   <span className="truncate font-medium">
-                    {user.name || "Người dùng"}
+                    {user.fullName || "User"}
                   </span>
-                  <span className="truncate text-xs">{user.emailOrPhone}</span>
+                  <span className="truncate text-xs">{user.email}</span>
                   <span className="truncate text-xs text-muted-foreground">
                     {getRoleDisplayName(user.role)}
                   </span>
@@ -116,17 +113,17 @@ export function NavUser() {
             <DropdownMenuGroup>
               <DropdownMenuItem>
                 <BadgeCheck />
-                Thông tin tài khoản
+                Account Information
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <Bell />
-                Thông báo
+                Notifications
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={logout}>
+            <DropdownMenuItem onClick={logout} disabled={isLoggingOut}>
               <LogOut />
-              Đăng xuất
+              {isLoggingOut ? "Logging out..." : "Logout"}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

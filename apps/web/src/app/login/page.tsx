@@ -26,6 +26,7 @@ export default function LoginPage() {
           src="https://res.cloudinary.com/dmhjgnymn/image/upload/v1760270374/poster_EvRenter_SWD392_hhfee8.png"
           alt="Image"
           fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className="object-cover dark:brightness-[0.2] dark:grayscale"
         />
       </div>

@@ -16,6 +16,11 @@ import { ApiResponse, ApiError } from "../types/common/api";
 // Lấy base URL từ environment variables
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
+// Log base URL in development
+if (process.env.NODE_ENV === "development") {
+  console.log("🌐 API Base URL:", BASE_URL);
+}
+
 /**
  * Tạo axios instance với cấu hình cơ bản
  */
@@ -81,26 +86,43 @@ apiClient.interceptors.response.use(
     return response;
   },
   (error: AxiosError) => {
-    // Log error trong development mode
+    // Log error trong development mode - chỉ log các lỗi không phải authentication
     if (process.env.NODE_ENV === "development") {
-      console.error(
-        `❌ API Error: ${error.config?.method?.toUpperCase()} ${error.config?.url}`,
-        {
-          status: error.response?.status,
-          message: error.message,
-          data: error.response?.data,
-        }
-      );
+      const status = error.response?.status;
+
+      // Không log lỗi 401 (Unauthorized) vì đây là trường hợp bình thường khi login sai
+      if (status !== 401) {
+        const method = error.config?.method?.toUpperCase() || "UNKNOWN";
+        const url = error.config?.url || "unknown";
+
+        console.error(`❌ API Error: ${method} ${url}`, {
+          status: status || "No status",
+          message: error.message || "Unknown error",
+          data: error.response?.data || "No response data",
+          code: error.code || "No code",
+          name: error.name || "No name",
+        });
+      }
     }
 
     // Xử lý các lỗi cụ thể
     if (error.response?.status === 401) {
       // Unauthorized - xóa token và redirect về login
-      console.warn("🔒 Unauthorized access detected, clearing tokens");
+      // Chỉ log warning nếu không phải đang ở trang login (tránh spam khi user nhập sai)
+      if (
+        typeof window !== "undefined" &&
+        window.location.pathname !== "/login"
+      ) {
+        console.warn("🔒 Unauthorized access detected, clearing tokens");
+      }
+
       clearAllTokens();
 
-      // Redirect về trang login nếu đang ở client side
-      if (typeof window !== "undefined") {
+      // Redirect về trang login nếu đang ở client side và không phải đang ở trang login
+      if (
+        typeof window !== "undefined" &&
+        window.location.pathname !== "/login"
+      ) {
         window.location.href = "/login";
       }
     }

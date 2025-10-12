@@ -18,17 +18,27 @@ export function middleware(request: NextRequest) {
     (route) => pathname === route || pathname.startsWith(route + "/")
   );
 
-  // Get the token from cookies
-  const token = request.cookies.get("auth-token")?.value;
-  const userRole = request.cookies.get("user-role")?.value;
+  // Get the token from localStorage via a cookie (we'll set this in the auth store)
+  const token = request.cookies.get("auth_token")?.value;
+  const userData = request.cookies.get("user_data")?.value;
+
+  let userRole: string | null = null;
+  try {
+    if (userData) {
+      const parsedUserData = JSON.parse(userData);
+      userRole = parsedUserData.role;
+    }
+  } catch (error) {
+    console.error("Error parsing user data:", error);
+  }
 
   // If it's a public route, allow access
   if (isPublicRoute) {
     // If user is already logged in and trying to access login page, redirect to appropriate dashboard
     if (pathname === "/login" && token && userRole) {
-      if (userRole === "staff") {
+      if (userRole === "Staff") {
         return NextResponse.redirect(new URL("/staff", request.url));
-      } else if (userRole === "renter") {
+      } else if (userRole === "Renter") {
         return NextResponse.redirect(new URL("/dashboard", request.url));
       }
     }
@@ -42,7 +52,7 @@ export function middleware(request: NextRequest) {
 
   // Check staff routes
   if (protectedRoutes.staff.some((route) => pathname.startsWith(route))) {
-    if (userRole !== "staff") {
+    if (userRole !== "Staff") {
       // Redirect to appropriate dashboard based on role
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
@@ -50,7 +60,7 @@ export function middleware(request: NextRequest) {
 
   // Check renter routes
   if (protectedRoutes.renter.some((route) => pathname.startsWith(route))) {
-    if (userRole !== "renter") {
+    if (userRole !== "Renter") {
       // Redirect to staff dashboard
       return NextResponse.redirect(new URL("/staff", request.url));
     }

@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { LoadingButton } from "@/components/ui/loading";
 import {
   Field,
   FieldGroup,
@@ -13,8 +14,8 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useAuth } from "@/contexts/auth-context";
-import { toast } from "sonner";
+import { useAuth } from "@/stores/auth.store";
+import { useEffect } from "react";
 
 // Define the Zod schema for login validation
 const loginSchema = z.object({
@@ -45,35 +46,58 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
-  const { login, isLoading } = useAuth();
+  const { login, isLoading, error, clearError } = useAuth();
   const {
     register,
     handleSubmit,
     formState: { errors },
-    setError,
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     mode: "onBlur", // Validate on blur for better UX
   });
 
-  const onSubmit = async (data: LoginFormData) => {
-    const result = await login(data.emailOrPhone, data.password);
-
-    if (!result.success) {
-      if (result.error) {
-        setError("root", { message: result.error });
-        toast.error(result.error);
+  // Clear error when user starts typing (not on mount)
+  useEffect(() => {
+    const handleInputChange = () => {
+      if (error) {
+        clearError();
       }
-    } else {
-      toast.success("Đăng nhập thành công!");
+    };
+
+    // Add event listeners to form inputs
+    const emailInput = document.getElementById("emailOrPhone");
+    const passwordInput = document.getElementById("password");
+
+    if (emailInput) {
+      emailInput.addEventListener("input", handleInputChange);
+    }
+    if (passwordInput) {
+      passwordInput.addEventListener("input", handleInputChange);
+    }
+
+    return () => {
+      if (emailInput) {
+        emailInput.removeEventListener("input", handleInputChange);
+      }
+      if (passwordInput) {
+        passwordInput.removeEventListener("input", handleInputChange);
+      }
+    };
+  }, [error, clearError]);
+
+  const onSubmit = async (data: LoginFormData) => {
+    try {
+      await login(data.emailOrPhone, data.password);
+      // Redirect logic is handled by middleware based on user role
+      // No need to manually redirect here
+    } catch (error) {
+      // Error handling is already done in the auth store
+      // Don't redirect on error - let user see the error message
+      console.error("Login failed:", error);
     }
   };
   return (
-    <form
-      className={cn("flex flex-col gap-6", className)}
-      onSubmit={handleSubmit(onSubmit)}
-      {...props}
-    >
+    <form className={cn("flex flex-col gap-6", className)} {...props}>
       <FieldGroup>
         <div className="flex flex-col items-center gap-1 text-center">
           <h1 className="text-2xl font-bold">Sign in to your account</h1>
@@ -113,6 +137,14 @@ export function LoginForm({
             errors={errors.password ? [errors.password] : undefined}
           />
         </Field>
+        {/* Show auth store error */}
+        {error && (
+          <Field>
+            <div className="text-destructive text-sm bg-destructive/10 border border-destructive/20 rounded-md p-3">
+              {error}
+            </div>
+          </Field>
+        )}
         {errors.root && (
           <Field>
             <div className="text-destructive text-sm">
@@ -121,9 +153,21 @@ export function LoginForm({
           </Field>
         )}
         <Field>
-          <Button type="submit" disabled={isLoading}>
-            {isLoading ? "Đang đăng nhập..." : "Đăng nhập"}
-          </Button>
+          <LoadingButton
+            type="button"
+            loading={isLoading}
+            disabled={isLoading}
+            className="w-full"
+            onClick={() => {
+              // Manually trigger form submission
+              const form = document.querySelector("form");
+              if (form) {
+                handleSubmit(onSubmit)();
+              }
+            }}
+          >
+            {isLoading ? "Signing in..." : "Sign in"}
+          </LoadingButton>
         </Field>
         <FieldSeparator>Or continue with</FieldSeparator>
         <Field>
