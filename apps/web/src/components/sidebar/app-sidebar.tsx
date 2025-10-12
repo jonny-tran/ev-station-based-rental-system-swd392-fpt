@@ -36,14 +36,6 @@ const getNavItems = (pathname: string) => [
   },
 ];
 
-const data = {
-  user: {
-    name: "Nguyễn Văn A",
-    email: "nguyenvana@example.com",
-    avatar: "/avatars/user.jpg",
-  },
-};
-
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
   const navItems = getNavItems(pathname);
@@ -65,7 +57,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={navItems} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

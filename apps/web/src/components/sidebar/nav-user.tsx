@@ -25,17 +25,39 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { useAuth } from "@/contexts/auth-context";
 
-export function NavUser({
-  user,
-}: {
-  user: {
-    name: string;
-    email: string;
-    avatar: string;
-  };
-}) {
+export function NavUser() {
+  const { user, logout } = useAuth();
   const { isMobile } = useSidebar();
+
+  if (!user) return null;
+
+  const getInitials = (name?: string, email?: string) => {
+    if (name) {
+      return name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2);
+    }
+    if (email) {
+      return email.slice(0, 2).toUpperCase();
+    }
+    return "U";
+  };
+
+  const getRoleDisplayName = (role: string) => {
+    switch (role) {
+      case "staff":
+        return "Nhân viên";
+      case "renter":
+        return "Khách hàng";
+      default:
+        return role;
+    }
+  };
 
   return (
     <SidebarMenu>
@@ -47,15 +69,18 @@ export function NavUser({
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                <AvatarFallback className="rounded-lg bg-primary text-primary-foreground">
+                  {getInitials(user.name, user.emailOrPhone)}
+                </AvatarFallback>
               </Avatar>
               <div
                 className="grid flex-1 text-left text-sm leading-tight"
                 suppressHydrationWarning={true}
               >
-                <span className="truncate font-medium">{user.name}</span>
-                <span className="truncate text-xs">{user.email}</span>
+                <span className="truncate font-medium">
+                  {user.name || "Người dùng"}
+                </span>
+                <span className="truncate text-xs">{user.emailOrPhone}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -69,44 +94,39 @@ export function NavUser({
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                  <AvatarFallback className="rounded-lg bg-primary text-primary-foreground">
+                    {getInitials(user.name, user.emailOrPhone)}
+                  </AvatarFallback>
                 </Avatar>
                 <div
                   className="grid flex-1 text-left text-sm leading-tight"
                   suppressHydrationWarning={true}
                 >
-                  <span className="truncate font-medium">{user.name}</span>
-                  <span className="truncate text-xs">{user.email}</span>
+                  <span className="truncate font-medium">
+                    {user.name || "Người dùng"}
+                  </span>
+                  <span className="truncate text-xs">{user.emailOrPhone}</span>
+                  <span className="truncate text-xs text-muted-foreground">
+                    {getRoleDisplayName(user.role)}
+                  </span>
                 </div>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <Sparkles />
-                Upgrade to Pro
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
                 <BadgeCheck />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCard />
-                Billing
+                Thông tin tài khoản
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <Bell />
-                Notifications
+                Thông báo
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={logout}>
               <LogOut />
-              Log out
+              Đăng xuất
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

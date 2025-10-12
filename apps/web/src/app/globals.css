@@ -45,73 +45,73 @@
 
 :root {
   --radius: 0.625rem;
-  /* VinFast EV Color Scheme - Light Mode */
+  /* EV Renter Color Scheme - Light Mode */
   --background: #ffffff;
-  --foreground: #0a192f;
+  --foreground: #0d1a2e;
   --card: #ffffff;
-  --card-foreground: #0a192f;
+  --card-foreground: #0d1a2e;
   --popover: #ffffff;
-  --popover-foreground: #0a192f;
-  --primary: #005bac; /* VinFast Blue */
+  --popover-foreground: #0d1a2e;
+  --primary: #007bff; /* Electric Blue from Logo */
   --primary-foreground: #ffffff;
-  --secondary: #e6f0fa;
-  --secondary-foreground: #0a192f;
+  --secondary: #e6f7e6; /* Light Green background */
+  --secondary-foreground: #0d1a2e;
   --muted: #f1f5f9;
   --muted-foreground: #64748b;
-  --accent: #0088ff;
-  --accent-foreground: #ffffff;
+  --accent: #91f803; /* Lime Green from Logo */
+  --accent-foreground: #0d1a2e; /* Dark text for readability on lime */
   --destructive: #e63946;
   --border: #e2e8f0;
   --input: #e2e8f0;
-  --ring: #3b82f6;
-  --chart-1: #005bac;
-  --chart-2: #0088ff;
-  --chart-3: #60a5fa;
-  --chart-4: #93c5fd;
+  --ring: #007bff;
+  --chart-1: #007bff;
+  --chart-2: #52a9ff;
+  --chart-3: #91f803;
+  --chart-4: #bafc5f;
   --chart-5: #cbd5e1;
   --sidebar: #f8fafc;
-  --sidebar-foreground: #0a192f;
-  --sidebar-primary: #005bac;
+  --sidebar-foreground: #0d1a2e;
+  --sidebar-primary: #007bff;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #e6f0fa;
-  --sidebar-accent-foreground: #0a192f;
+  --sidebar-accent: #eef7ff;
+  --sidebar-accent-foreground: #0d1a2e;
   --sidebar-border: #e2e8f0;
-  --sidebar-ring: #3b82f6;
+  --sidebar-ring: #007bff;
 }
 
 .dark {
-  /* VinFast EV Color Scheme - Dark Mode */
-  --background: #0a192f;
+  /* EV Renter Color Scheme - Dark Mode */
+  --background: #0d1a2e; /* Dark Navy Blue */
   --foreground: #f8fafc;
-  --card: #1e293b;
+  --card: #182c47;
   --card-foreground: #f8fafc;
-  --popover: #1e293b;
+  --popover: #182c47;
   --popover-foreground: #f8fafc;
-  --primary: #3b82f6;
-  --primary-foreground: #ffffff;
-  --secondary: #1e3a5f;
+  --primary: #38bdf8; /* Brighter Blue for Dark Mode */
+  --primary-foreground: #0d1a2e;
+  --secondary: #1a3b1a; /* Dark Green background */
   --secondary-foreground: #f8fafc;
   --muted: #1e293b;
   --muted-foreground: #94a3b8;
-  --accent: #2563eb;
-  --accent-foreground: #ffffff;
+  --accent: #91f803; /* Lime Green from Logo */
+  --accent-foreground: #0d1a2e; /* Dark text for readability on lime */
   --destructive: #ef4444;
-  --border: #1e3a5f;
-  --input: #1e3a5f;
-  --ring: #60a5fa;
-  --chart-1: #3b82f6;
-  --chart-2: #2563eb;
-  --chart-3: #60a5fa;
-  --chart-4: #93c5fd;
-  --chart-5: #cbd5e1;
-  --sidebar: #1e293b;
+  --border: #334155;
+  --input: #334155;
+  --ring: #38bdf8;
+  --chart-1: #38bdf8;
+  --chart-2: #60a5fa;
+  --chart-3: #91f803;
+  --chart-4: #bafc5f;
+  --chart-5: #94a3b8;
+  --sidebar: #182c47;
   --sidebar-foreground: #f8fafc;
-  --sidebar-primary: #3b82f6;
-  --sidebar-primary-foreground: #ffffff;
+  --sidebar-primary: #38bdf8;
+  --sidebar-primary-foreground: #0d1a2e;
   --sidebar-accent: #1e3a5f;
   --sidebar-accent-foreground: #f8fafc;
   --sidebar-border: #334155;
-  --sidebar-ring: #60a5fa;
+  --sidebar-ring: #38bdf8;
 }
 
 @layer base {

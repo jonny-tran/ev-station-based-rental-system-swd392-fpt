@@ -54,14 +54,6 @@ const getStaffNavItems = (pathname: string) => [
   },
 ];
 
-const data = {
-  user: {
-    name: "Staff User",
-    email: "staff@example.com",
-    avatar: "/avatars/staff.jpg",
-  },
-};
-
 export function StaffSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
@@ -85,7 +77,7 @@ export function StaffSidebar({
         <NavMain items={navItems} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
