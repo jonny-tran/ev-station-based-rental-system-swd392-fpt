@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
-import { GlobalLoadingOverlay } from "@/components/global-loading-overlay";
+import { GlobalLoadingOverlay } from "@/components/loading/global-loading-overlay";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,7 +35,7 @@ export default function RootLayout({
         suppressHydrationWarning={true}
       >
         {children}
-        <Toaster />
+        <Toaster position="top-right" richColors />
         <GlobalLoadingOverlay />
       </body>
     </html>

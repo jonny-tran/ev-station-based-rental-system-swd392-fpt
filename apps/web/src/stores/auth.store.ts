@@ -5,7 +5,7 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { AuthService, AuthError } from "@/services/auth.service";
+import { AuthService, AuthError } from "@/packages/services";
 import { toast } from "@/lib/toast";
 import { useLoadingStore } from "./loading.store";
 

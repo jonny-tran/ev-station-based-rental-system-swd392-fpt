@@ -3,17 +3,9 @@
  * Handles all authentication-related API calls
  */
 
-import { apiPost, apiGet } from "@/packages/lib/api-client";
-import {
-  setAuthToken,
-  clearAllTokens,
-  getAuthToken,
-} from "@/packages/lib/auth-token";
-import {
-  LoginRequest,
-  LoginResponse,
-  AuthInfoResponse,
-} from "@/packages/types/auth";
+import { apiPost, apiGet } from "../lib/api-client";
+import { setAuthToken, clearAllTokens, getAuthToken } from "../lib/auth-token";
+import { LoginRequest, LoginResponse, AuthInfoResponse } from "../types/auth";
 
 // Interface for API error responses
 interface ApiErrorResponse {
@@ -45,31 +37,6 @@ export class AuthService {
       // If it's an Axios error with response data, use that
       if (apiError.response?.data) {
         const status = apiError.response.data.status || 500;
-        const httpStatus = apiError.response?.status; // HTTP status code từ axios
-
-        // Debug: log để xem status thực tế
-        if (process.env.NODE_ENV === "development") {
-          console.log("🔍 Debug Login Error:", {
-            apiStatus: status,
-            httpStatus: httpStatus,
-            message: apiError.response.data.message,
-          });
-        }
-
-        // Chỉ log console.error cho các lỗi không phải 401 (authentication errors)
-        // Kiểm tra cả API status và HTTP status
-        if (
-          status !== 401 &&
-          httpStatus !== 401 &&
-          process.env.NODE_ENV === "development"
-        ) {
-          console.error("🔐 Login API Error:", {
-            status,
-            httpStatus,
-            message: apiError.response.data.message,
-            code: apiError.response.data.code,
-          });
-        }
 
         throw new AuthError(
           apiError.response.data.message || "Login failed",
@@ -77,11 +44,6 @@ export class AuthService {
           apiError.response.data.code,
           apiError.response.data
         );
-      }
-
-      // Log network/unknown errors
-      if (process.env.NODE_ENV === "development") {
-        console.error("🔐 Login Network/Unknown Error:", error);
       }
 
       // Otherwise, throw a generic error
@@ -107,26 +69,12 @@ export class AuthService {
       if (apiError.response?.data) {
         const status = apiError.response.data.status || 500;
 
-        // Chỉ log console.error cho các lỗi không phải 401
-        if (status !== 401 && process.env.NODE_ENV === "development") {
-          console.error("👤 Get User Info API Error:", {
-            status,
-            message: apiError.response.data.message,
-            code: apiError.response.data.code,
-          });
-        }
-
         throw new AuthError(
           apiError.response.data.message || "Unable to get user information",
           status,
           apiError.response.data.code,
           apiError.response.data
         );
-      }
-
-      // Log network/unknown errors
-      if (process.env.NODE_ENV === "development") {
-        console.error("👤 Get User Info Network/Unknown Error:", error);
       }
 
       throw new AuthError(

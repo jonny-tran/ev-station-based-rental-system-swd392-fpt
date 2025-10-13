@@ -16,11 +16,6 @@ import { ApiResponse, ApiError } from "../types/common/api";
 // Lấy base URL từ environment variables
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
-// Log base URL in development
-if (process.env.NODE_ENV === "development") {
-  console.log("🌐 API Base URL:", BASE_URL);
-}
-
 /**
  * Tạo axios instance với cấu hình cơ bản
  */
@@ -47,21 +42,9 @@ apiClient.interceptors.request.use(
       config.headers.Authorization = token;
     }
 
-    // Log request trong development mode
-    if (process.env.NODE_ENV === "development") {
-      console.log(
-        `🚀 API Request: ${config.method?.toUpperCase()} ${config.url}`,
-        {
-          headers: config.headers,
-          data: config.data,
-        }
-      );
-    }
-
     return config;
   },
   (error: AxiosError) => {
-    console.error("❌ Request Error:", error);
     return Promise.reject(error);
   }
 );
@@ -72,17 +55,6 @@ apiClient.interceptors.request.use(
  */
 apiClient.interceptors.response.use(
   (response: AxiosResponse) => {
-    // Log response trong development mode
-    if (process.env.NODE_ENV === "development") {
-      console.log(
-        `✅ API Response: ${response.config.method?.toUpperCase()} ${response.config.url}`,
-        {
-          status: response.status,
-          data: response.data,
-        }
-      );
-    }
-
     return response;
   },
   (error: AxiosError) => {
@@ -94,14 +66,6 @@ apiClient.interceptors.response.use(
       if (status !== 401) {
         const method = error.config?.method?.toUpperCase() || "UNKNOWN";
         const url = error.config?.url || "unknown";
-
-        console.error(`❌ API Error: ${method} ${url}`, {
-          status: status || "No status",
-          message: error.message || "Unknown error",
-          data: error.response?.data || "No response data",
-          code: error.code || "No code",
-          name: error.name || "No name",
-        });
       }
     }
 
@@ -112,11 +76,8 @@ apiClient.interceptors.response.use(
       if (
         typeof window !== "undefined" &&
         window.location.pathname !== "/login"
-      ) {
-        console.warn("🔒 Unauthorized access detected, clearing tokens");
-      }
-
-      clearAllTokens();
+      )
+        clearAllTokens();
 
       // Redirect về trang login nếu đang ở client side và không phải đang ở trang login
       if (
@@ -129,12 +90,14 @@ apiClient.interceptors.response.use(
 
     // Xử lý lỗi 403 - Forbidden
     if (error.response?.status === 403) {
-      console.warn("🚫 Access forbidden");
+      clearAllTokens();
+      window.location.href = "/login";
     }
 
     // Xử lý lỗi 500 - Internal Server Error
     if (error.response?.status === 500) {
-      console.error("🔥 Internal server error");
+      clearAllTokens();
+      window.location.href = "/login";
     }
 
     return Promise.reject(error);
