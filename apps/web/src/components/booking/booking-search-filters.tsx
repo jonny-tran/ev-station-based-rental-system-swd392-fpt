@@ -39,7 +39,7 @@ export function BookingSearchFilters({
       <div className="relative flex-1 min-w-0">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder="Tìm kiếm theo ID booking, biển số xe, model, thương hiệu..."
+          placeholder="Search by booking ID, license plate, model, brand..."
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
           className="pl-10"
@@ -60,31 +60,25 @@ export function BookingSearchFilters({
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center lg:flex-shrink-0">
         <div className="flex items-center gap-2">
           <Filter className="h-4 w-4" />
-          <span className="text-sm font-medium">Trạng thái:</span>
+          <span className="text-sm font-medium">Status:</span>
           <Select value={filterStatus} onValueChange={onFilterChange}>
             <SelectTrigger className="w-40">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Tất cả</SelectItem>
-              <SelectItem value={BookingStatus.Confirmed}>
-                Đã xác nhận
-              </SelectItem>
-              <SelectItem value={BookingStatus.Pending}>
-                Chờ xác nhận
-              </SelectItem>
-              <SelectItem value={BookingStatus.Completed}>
-                Hoàn thành
-              </SelectItem>
-              <SelectItem value={BookingStatus.Expired}>Hết hạn</SelectItem>
-              <SelectItem value={BookingStatus.Cancelled}>Đã hủy</SelectItem>
+              <SelectItem value="all">All</SelectItem>
+              <SelectItem value={BookingStatus.Pending}>Pending</SelectItem>
+              <SelectItem value={BookingStatus.Confirmed}>Confirmed</SelectItem>
+              <SelectItem value={BookingStatus.Completed}>Completed</SelectItem>
+              <SelectItem value={BookingStatus.Cancelled}>Cancelled</SelectItem>
+              <SelectItem value={BookingStatus.Expired}>Expired</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         <div className="flex items-center gap-2">
           <Calendar className="h-4 w-4" />
-          <span className="text-sm font-medium">Ngày:</span>
+          <span className="text-sm font-medium">Date:</span>
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -93,7 +87,7 @@ export function BookingSearchFilters({
               >
                 {selectedDate
                   ? selectedDate.toLocaleDateString("vi-VN")
-                  : "Chọn ngày"}
+                  : "Select date"}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
@@ -111,7 +105,7 @@ export function BookingSearchFilters({
                     className="w-full"
                     onClick={() => onDateChange(undefined)}
                   >
-                    Xóa bộ lọc ngày
+                    Clear date filter
                   </Button>
                 </div>
               )}

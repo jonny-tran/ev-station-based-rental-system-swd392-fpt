@@ -19,11 +19,11 @@ export function BookingActions({
   return (
     <div className="flex justify-end gap-2 pt-4 border-t">
       <Button variant="outline" onClick={onBack}>
-        Quay lại Dashboard
+        Back to Dashboard
       </Button>
       {shouldShowCancelButton && (
         <Button variant="destructive" onClick={onCancel}>
-          Hủy booking
+          Cancel booking
         </Button>
       )}
     </div>

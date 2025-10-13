@@ -4,8 +4,8 @@
  */
 
 export { AuthService, AuthError } from "./auth.service";
+export { BookingService, BookingError } from "./booking.service";
 
 // Future services can be exported here:
-// export { BookingService } from './booking.service';
 // export { VehicleService } from './vehicle.service';
 // export { ContractService } from './contract.service';

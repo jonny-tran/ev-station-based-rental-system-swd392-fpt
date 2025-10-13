@@ -84,19 +84,6 @@ export function LoadingPage({ text = "Loading..." }: LoadingPageProps) {
       <div className="text-center space-y-8 p-8 relative z-10">
         {/* Animated Logo/Icon */}
         <div className="relative w-32 h-32 mx-auto">
-          {/* Outer spinning ring */}
-          <div className="absolute inset-0 animate-spin">
-            <div className="w-full h-full border-4 border-transparent border-t-blue-500 border-r-green-500 rounded-full"></div>
-          </div>
-
-          {/* Middle spinning ring */}
-          <div
-            className="absolute inset-2 animate-spin"
-            style={{ animationDirection: "reverse", animationDuration: "1.5s" }}
-          >
-            <div className="w-full h-full border-3 border-transparent border-t-green-400 border-l-blue-400 rounded-full"></div>
-          </div>
-
           {/* Inner logo container */}
           <div className="absolute inset-4 flex items-center justify-center">
             <div className="w-full h-full bg-gradient-to-r from-blue-600 to-green-600 rounded-full flex items-center justify-center shadow-2xl animate-pulse">

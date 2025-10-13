@@ -9,31 +9,13 @@ import { Button } from "@/components/ui/button";
 
 interface BookingQRCodeProps {
   bookingId: string;
-  vehicleInfo: string;
-  rentalLocation: string;
-  startTime: string;
-  endTime: string;
 }
 
-export function BookingQRCode({
-  bookingId,
-  vehicleInfo,
-  rentalLocation,
-  startTime,
-  endTime,
-}: BookingQRCodeProps) {
+export function BookingQRCode({ bookingId }: BookingQRCodeProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  // Tạo dữ liệu cho QR code
-  const qrData = JSON.stringify({
-    bookingId,
-    vehicleInfo,
-    rentalLocation,
-    startTime,
-    endTime,
-    timestamp: new Date().toISOString(),
-    type: "booking-checkin",
-  });
+  // Create QR code data - only booking ID
+  const qrData = bookingId;
 
   useEffect(() => {
     const generateQRCode = async () => {
@@ -73,7 +55,7 @@ export function BookingQRCode({
           if (blob) {
             await navigator.share({
               title: `QR Code Booking ${bookingId}`,
-              text: `QR Code để check-in cho booking ${bookingId}`,
+              text: `QR Code to check-in for booking ${bookingId}`,
               files: [
                 new File([blob], `booking-${bookingId}-qr.png`, {
                   type: "image/png",
@@ -84,7 +66,7 @@ export function BookingQRCode({
         });
       } catch (error) {
         console.error("Error sharing QR code:", error);
-        // Fallback: copy to clipboard
+        // Fallback: copy to clipboard if sharing fails
         copyToClipboard();
       }
     } else {
@@ -95,7 +77,7 @@ export function BookingQRCode({
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(qrData);
-      alert("QR Code data đã được copy vào clipboard!");
+      alert("QR Code data has been copied to clipboard!");
     } catch (error) {
       console.error("Error copying to clipboard:", error);
     }
@@ -106,7 +88,7 @@ export function BookingQRCode({
       <CardHeader className="text-center">
         <CardTitle className="flex items-center justify-center gap-2">
           <QrCode className="h-5 w-5" />
-          Mã QR Check-in
+          QR Code Check-in
         </CardTitle>
         <Badge variant="outline" className="w-fit mx-auto">
           Booking #{bookingId}
@@ -122,16 +104,14 @@ export function BookingQRCode({
           />
         </div>
 
-        {/* Thông tin hướng dẫn */}
+        {/* Instructions */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-          <h4 className="font-medium text-blue-900 mb-2">
-            📱 Hướng dẫn sử dụng:
-          </h4>
+          <h4 className="font-medium text-blue-900 mb-2">📱 How to use:</h4>
           <ul className="text-sm text-blue-800 space-y-1">
-            <li>• Đến trạm thuê xe theo địa chỉ đã đặt</li>
-            <li>• Mở QR code này trên điện thoại</li>
-            <li>• Quét mã QR tại quầy để check-in</li>
-            <li>• Nhận xe và bắt đầu chuyến đi</li>
+            <li>• Go to the rental station at the booked address</li>
+            <li>• Open this QR code on your phone</li>
+            <li>• Scan the QR code at the counter to check-in</li>
+            <li>• Receive your vehicle and start your trip</li>
           </ul>
         </div>
 
@@ -139,18 +119,18 @@ export function BookingQRCode({
         <div className="flex gap-2">
           <Button onClick={downloadQRCode} variant="outline" className="flex-1">
             <Download className="h-4 w-4 mr-2" />
-            Tải xuống
+            Download
           </Button>
           <Button onClick={shareQRCode} variant="outline" className="flex-1">
             <Share className="h-4 w-4 mr-2" />
-            Chia sẻ
+            Share
           </Button>
         </div>
 
-        {/* Thông tin bổ sung */}
+        {/* Additional information */}
         <div className="text-xs text-muted-foreground text-center">
-          <p>QR Code này chứa thông tin booking của bạn</p>
-          <p>Hãy giữ bí mật và chỉ sử dụng khi cần thiết</p>
+          <p>This QR code contains your booking information</p>
+          <p>Keep it secret and use it only when needed</p>
         </div>
       </CardContent>
     </Card>

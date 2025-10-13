@@ -1,9 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, Clock, FileText } from "lucide-react";
-import { Booking, toLocal } from "@packages";
+import { toLocal } from "@packages";
+import { BookingDetailsResponse } from "@/packages/types/booking";
 
 interface BookingTimeInfoProps {
-  booking: Booking;
+  booking: BookingDetailsResponse;
 }
 
 export function BookingTimeInfo({ booking }: BookingTimeInfoProps) {
@@ -12,14 +13,14 @@ export function BookingTimeInfo({ booking }: BookingTimeInfoProps) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Calendar className="h-5 w-5" />
-          Thời gian thuê
+          Rental time
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center gap-3">
           <Clock className="h-4 w-4 text-green-600" />
           <div>
-            <p className="text-sm font-medium">Bắt đầu</p>
+            <p className="text-sm font-medium">Start</p>
             <p className="text-sm text-muted-foreground">
               {toLocal(booking.startTime)}
             </p>
@@ -28,7 +29,7 @@ export function BookingTimeInfo({ booking }: BookingTimeInfoProps) {
         <div className="flex items-center gap-3">
           <Clock className="h-4 w-4 text-red-600" />
           <div>
-            <p className="text-sm font-medium">Kết thúc</p>
+            <p className="text-sm font-medium">End</p>
             <p className="text-sm text-muted-foreground">
               {toLocal(booking.endTime)}
             </p>
@@ -37,7 +38,7 @@ export function BookingTimeInfo({ booking }: BookingTimeInfoProps) {
         <div className="flex items-center gap-3">
           <FileText className="h-4 w-4 text-blue-600" />
           <div>
-            <p className="text-sm font-medium">Ngày đặt</p>
+            <p className="text-sm font-medium">Booked date</p>
             <p className="text-sm text-muted-foreground">
               {toLocal(booking.createdAt)}
             </p>

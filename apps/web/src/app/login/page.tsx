@@ -23,7 +23,7 @@ export default function LoginPage() {
       </div>
       <div className="bg-muted relative hidden lg:block">
         <Image
-          src="https://res.cloudinary.com/dmhjgnymn/image/upload/v1760270374/poster_EvRenter_SWD392_hhfee8.png"
+          src="https://res.cloudinary.com/dmhjgnymn/image/upload/v1760335387/poster_EvRenter_SWD392_hhfee8.png"
           alt="Image"
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

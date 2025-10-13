@@ -55,7 +55,7 @@ Account (1) ←→ (1) Renter (1) ←→ (N) Booking (N) ←→ (1) Vehicle (N) 
 
 ## API Endpoints
 
-### 1. GET /booking/all
+### 1. GET /api/booking/all
 
 **Mục đích**: Lấy danh sách tất cả bookings của renter hiện tại
 
@@ -97,7 +97,7 @@ Authorization: Bearer <jwt_token>
 }
 ```
 
-### 2. GET /booking/details/:bookingId
+### 2. GET /api/booking/details/:bookingId
 
 **Mục đích**: Lấy chi tiết booking theo ID
 

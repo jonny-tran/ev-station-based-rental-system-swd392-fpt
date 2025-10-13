@@ -1,5 +1,5 @@
-import { Calendar } from "lucide-react";
 import { BookingStatus } from "@packages";
+import { Empty } from "@/components/ui/empty";
 
 interface BookingEmptyStateProps {
   filterStatus: BookingStatus | "all";
@@ -7,14 +7,15 @@ interface BookingEmptyStateProps {
 
 export function BookingEmptyState({ filterStatus }: BookingEmptyStateProps) {
   return (
-    <div className="col-span-full flex flex-col items-center justify-center py-12 text-center">
-      <Calendar className="h-12 w-12 text-muted-foreground mb-4" />
-      <h3 className="text-lg font-medium">Không có booking nào</h3>
-      <p className="text-muted-foreground">
-        {filterStatus === "all"
-          ? "Bạn chưa có booking nào. Hãy đặt xe ngay!"
-          : "Không có booking nào với trạng thái đã chọn."}
-      </p>
+    <div className="col-span-full">
+      <Empty
+        title="No booking found"
+        content={
+          filterStatus === "all"
+            ? "You don't have any booking. Please book a vehicle now!"
+            : "No booking found with the selected status."
+        }
+      />
     </div>
   );
 }

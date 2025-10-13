@@ -22,27 +22,8 @@ const getStatusColor = (status: BookingStatus) => {
   }
 };
 
-const getStatusText = (status: BookingStatus) => {
-  switch (status) {
-    case BookingStatus.Pending:
-      return "Chờ xác nhận";
-    case BookingStatus.Confirmed:
-      return "Đã xác nhận";
-    case BookingStatus.Completed:
-      return "Hoàn thành";
-    case BookingStatus.Cancelled:
-      return "Đã hủy";
-    case BookingStatus.Expired:
-      return "Hết hạn";
-    default:
-      return status;
-  }
-};
-
 export function BookingStatusBadge({ status }: BookingStatusBadgeProps) {
   return (
-    <Badge className={`${getStatusColor(status)} font-medium`}>
-      {getStatusText(status)}
-    </Badge>
+    <Badge className={`${getStatusColor(status)} font-medium`}>{status}</Badge>
   );
 }

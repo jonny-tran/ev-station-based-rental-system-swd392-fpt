@@ -7,7 +7,7 @@ Endpoint login đã được cải thiện để xử lý các trường hợp l
 ## Endpoint
 
 ```
-POST /auth/login
+POST /api/auth/login
 ```
 
 ## Request Body
