@@ -14,6 +14,8 @@ import { Staff } from './entities/staff.entity';
 import { VehicleInspection } from './entities/vehicle-inspection.entity';
 import { DriverLicense } from './entities/driver-license.entity';
 import { Contract } from './entities/contract.entity';
+import { Payment } from './entities/payment.entity';
+import { PaymentModule } from './modules/payment.module';
 import { CloudinaryProvider } from '../third-party/cloudinary/cloudinary.config';
 
 @Module({
@@ -40,6 +42,7 @@ import { CloudinaryProvider } from '../third-party/cloudinary/cloudinary.config'
           VehicleInspection,
           DriverLicense,
           Contract,
+          Payment,
         ],
         synchronize: false, // Tắt hoàn toàn synchronize vì đã có sẵn database
         logging: false,
@@ -54,6 +57,7 @@ import { CloudinaryProvider } from '../third-party/cloudinary/cloudinary.config'
     BookingModule,
     CheckinSessionModule,
     ContractModule,
+    PaymentModule,
   ],
   providers: [CloudinaryProvider],
 })

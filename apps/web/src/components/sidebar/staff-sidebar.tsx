@@ -23,25 +23,25 @@ import {
 // Staff navigation items
 const getStaffNavItems = (pathname: string) => [
   {
-    title: "Trang chính",
+    title: "Dashboard",
     url: "/staff",
     icon: LayoutDashboard,
     isActive: pathname === "/staff",
   },
   {
-    title: "Quét mã QR",
+    title: "Open check-in session",
     url: "/staff/qr-scan",
     icon: QrCode,
     isActive: pathname.startsWith("/staff/qr-scan"),
   },
   {
-    title: "Phiên Check-in",
+    title: "Manage check-in session",
     url: "/staff/checkin-session",
     icon: CheckCircle,
     isActive: pathname.startsWith("/staff/checkin-session"),
   },
   {
-    title: "Hợp đồng",
+    title: "Contract",
     url: "/staff/contract",
     icon: FileText,
     isActive: pathname.startsWith("/staff/contract"),

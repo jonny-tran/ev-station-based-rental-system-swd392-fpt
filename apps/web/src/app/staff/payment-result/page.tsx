@@ -36,6 +36,8 @@ export default function PaymentResultPage() {
   const status = searchParams.get("status");
   const method = searchParams.get("method") ?? "";
   const returnPath = searchParams.get("return") ?? "/staff";
+  const transactionIdParam = searchParams.get("transactionId");
+  const amountParam = searchParams.get("amount");
 
   const paymentRecord = useMemo(() => {
     if (paymentIdParam) {
@@ -59,10 +61,33 @@ export default function PaymentResultPage() {
     return false;
   }, [status, paymentRecord]);
 
-  const paymentMethod = paymentRecord?.paymentMethod || method;
-  const amount = paymentRecord?.amount;
-  const transactionId =
-    paymentRecord?.transactionId || paymentIdParam || "N/A";
+  const paymentMethod = paymentRecord?.paymentMethod || method || "VNPay";
+  
+  // Ưu tiên lấy amount từ URL params (từ VNPay callback), sau đó từ payment record
+  const amount = useMemo(() => {
+    if (amountParam) {
+      const parsedAmount = parseFloat(amountParam);
+      if (!isNaN(parsedAmount)) {
+        return parsedAmount;
+      }
+    }
+    return paymentRecord?.amount;
+  }, [amountParam, paymentRecord]);
+  
+  // Ưu tiên lấy transactionId từ URL params (từ VNPay callback), sau đó từ payment record
+  const transactionId = useMemo(() => {
+    if (transactionIdParam) {
+      return transactionIdParam;
+    }
+    if (paymentRecord?.transactionId) {
+      return paymentRecord.transactionId;
+    }
+    if (paymentIdParam) {
+      return paymentIdParam;
+    }
+    return "N/A";
+  }, [transactionIdParam, paymentRecord, paymentIdParam]);
+  
   const paymentDate = paymentRecord?.paymentDate || new Date().toISOString();
 
   // Lấy icon cho phương thức thanh toán
