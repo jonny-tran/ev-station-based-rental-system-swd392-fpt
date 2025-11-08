@@ -191,3 +191,17 @@ ORDER BY v.[VehicleID];
 
 
 select * from [Booking]
+
+select * from [Renter]
+
+---- insert more to test
+INSERT INTO [Booking] ([RenterID], [VehicleID], [StartTime], [EndTime], [DepositAmount], [Status])
+SELECT TOP 10
+    '4A0034D7-5EE6-43BE-B17C-A00D47B6746C' AS [RenterID],
+    v.[VehicleID],
+    DATEADD(HOUR, ROW_NUMBER() OVER (ORDER BY v.[VehicleID]) * 4, '2025-11-02T09:00:00') AS [StartTime],
+    DATEADD(HOUR, ROW_NUMBER() OVER (ORDER BY v.[VehicleID]) * 4 + 2, '2025-11-02T09:00:00') AS [EndTime],
+    (150000 + (ROW_NUMBER() OVER (ORDER BY v.[VehicleID]) * 15000)) AS [DepositAmount],
+    'Pending' AS [Status]
+FROM [Vehicle] v
+ORDER BY v.[VehicleID];

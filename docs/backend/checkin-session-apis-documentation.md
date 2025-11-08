@@ -89,15 +89,14 @@ Authorization: Bearer <JWT_TOKEN>
 
 ```json
 {
-  "bookingId": "123e4567-e89b-12d3-a456-426614174000",
-  "staffId": "123e4567-e89b-12d3-a456-426614174004"
+  "bookingId": "123e4567-e89b-12d3-a456-426614174000"
 }
 ```
 
 **Validation:**
 
 - `bookingId`: Required, UUID format
-- `staffId`: Required, UUID format
+- `staffId`: Automatically extracted from JWT access token
 
 **Response (201 Created):**
 
@@ -210,7 +209,7 @@ The check-in sessions are stored in the `VehicleInspectionDatTT` table with the 
    - `InspectionType`: "check_in"
    - `CurrentStep`: 1
    - `Status`: "Pending"
-   - `StaffID`: From request
+   - `StaffID`: From JWT access token
    - `BookingID`: From request
 
 ### Session Listing Flow

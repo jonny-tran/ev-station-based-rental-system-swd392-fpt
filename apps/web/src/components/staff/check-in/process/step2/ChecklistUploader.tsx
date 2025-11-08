@@ -6,12 +6,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 export type ChecklistPhotos = {
-  front?: string;
-  rear?: string;
-  left?: string;
-  right?: string;
-  odo?: string;
-  battery?: string;
+  front?: File | string;
+  rear?: File | string;
+  left?: File | string;
+  right?: File | string;
+  odo?: File | string;
+  battery?: File | string;
 };
 
 const items: {
@@ -19,12 +19,12 @@ const items: {
   label: string;
   required?: boolean;
 }[] = [
-  { key: "front", label: "Ảnh ngoại thất trước", required: true },
-  { key: "rear", label: "Ảnh ngoại thất sau", required: true },
-  { key: "left", label: "Ảnh bên trái", required: true },
-  { key: "right", label: "Ảnh bên phải", required: true },
-  { key: "odo", label: "Ảnh đồng hồ ODO", required: true },
-  { key: "battery", label: "Ảnh pin/nhiên liệu", required: true },
+  { key: "front", label: "Front Exterior Photo", required: true },
+  { key: "rear", label: "Rear Exterior Photo", required: true },
+  { key: "left", label: "Left Side Photo", required: true },
+  { key: "right", label: "Right Side Photo", required: true },
+  { key: "odo", label: "Odometer Photo", required: true },
+  { key: "battery", label: "Battery/Fuel Photo", required: true },
 ];
 
 export function ChecklistUploader({
@@ -42,17 +42,14 @@ export function ChecklistUploader({
 
   const handleFile = (key: keyof ChecklistPhotos, file?: File | null) => {
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      onChange({ ...photos, [key]: String(reader.result) });
-    };
-    reader.readAsDataURL(file);
+    // Save File object directly
+    onChange({ ...photos, [key]: file });
   };
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Checklist ảnh bắt buộc</CardTitle>
+        <CardTitle>Required Photo Checklist</CardTitle>
       </CardHeader>
       <CardContent className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         {items.map((it) => {
@@ -68,7 +65,7 @@ export function ChecklistUploader({
                     ) : null}
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    {hasImage ? "Đã tải ảnh ✅" : "Chưa có ảnh"}
+                    {hasImage ? "Photo uploaded ✅" : "No photo"}
                   </div>
                 </div>
                 <Button
@@ -76,13 +73,17 @@ export function ChecklistUploader({
                   variant="secondary"
                   onClick={() => handlePick(it.key)}
                 >
-                  {hasImage ? "Đổi ảnh" : "Tải ảnh"}
+                  {hasImage ? "Change Photo" : "Upload Photo"}
                 </Button>
               </div>
               {hasImage && (
                 <div className="mt-3">
                   <Image
-                    src={photos[it.key] as string}
+                    src={
+                      typeof photos[it.key] === "string"
+                        ? (photos[it.key] as string)
+                        : URL.createObjectURL(photos[it.key] as File)
+                    }
                     alt={it.label}
                     width={800}
                     height={450}
@@ -94,7 +95,7 @@ export function ChecklistUploader({
                 type="file"
                 accept="image/*"
                 className="hidden"
-                aria-label={`Tải ${it.label}`}
+                aria-label={`Upload ${it.label}`}
                 ref={(el) => {
                   fileInputs.current[it.key] = el;
                 }}

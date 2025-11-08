@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { RadioGroup } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
-import { PaymentMethod } from "@/packages/types/enum";
+import { PaymentMethod } from "@/packages/types/payment";
 import { PaymentMethodCard } from "./PaymentMethodCard";
 import { CreditCard, Wallet } from "lucide-react";
 import { useRouter } from "next/navigation";

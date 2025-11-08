@@ -6,7 +6,7 @@ import { RenterInfoPanel } from "./RenterInfoPanel";
 import { ActionButtons } from "./ActionButtons";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, CheckCircle } from "lucide-react";
-import { ContractStatus } from "@/packages/types/enum";
+import { ContractStatus } from "@/packages/types/contract";
 import { ContractData } from "../../../../../../../../packages/contract/contract-types";
 import { ContractDataService } from "../../../../../../../../packages/contract/contract-data-service";
 

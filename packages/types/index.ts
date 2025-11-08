@@ -9,6 +9,7 @@ export * from "./common";
 // Domain-specific types
 export * from "./auth";
 export * from "./booking";
+export * from "./checkin";
 export * from "./vehicle";
 export * from "./rental";
 export * from "./contract";

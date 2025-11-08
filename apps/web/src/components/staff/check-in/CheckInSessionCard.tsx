@@ -3,87 +3,53 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { mockService } from "@/packages/services/mock-service";
-import { VehicleInspection } from "@/packages/types/vehicleInspection";
-import { Booking } from "@/packages/types/booking";
-import { Vehicle } from "@/packages/types/vehicle";
-import { Renter } from "@/packages/types/renter";
-import { Account } from "@/packages/types/account";
+import {
+  CheckInSessionListItem,
+  InspectionStatus,
+} from "@/packages/types/checkin";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
-import { VehicleInspectionStatus } from "@/packages/types/enum";
 import { InspectionStatusBadge } from "@/components/staff/check-in/common/InspectionStatusBadge";
 
 const formatDateTime = (iso: string) =>
   format(new Date(iso), "dd/MM/yyyy HH:mm", { locale: vi });
 
-function StatusBadge({ status }: { status: VehicleInspectionStatus }) {
+function StatusBadge({ status }: { status: InspectionStatus }) {
   return <InspectionStatusBadge status={status} />;
 }
 
-function getRelatedEntities(inspection: VehicleInspection) {
-  const booking: Booking | undefined = mockService.getBookingById(
-    inspection.bookingId
-  );
-  const vehicle: Vehicle | undefined = booking
-    ? mockService.getVehicleById(booking.vehicleId)
-    : undefined;
-  const renter: Renter | undefined = booking
-    ? mockService.getRenterById(booking.renterId)
-    : undefined;
-  const account: Account | undefined = renter
-    ? mockService.getAccountById(renter.accountId)
-    : undefined;
+// Removed getRelatedEntities function as we now use data directly from API
 
-  return { booking, vehicle, renter, account };
-}
+function buildDisplayTexts(session: CheckInSessionListItem) {
+  const vehicleText = session.vehicle
+    ? `${session.vehicle.brand} ${session.vehicle.model} • ${session.vehicle.licensePlate}`
+    : "Unknown Vehicle";
 
-function buildDisplayTexts(
-  inspection: VehicleInspection,
-  deps: {
-    booking?: Booking;
-    vehicle?: Vehicle;
-    renter?: Renter;
-    account?: Account;
-  }
-) {
-  const { booking, vehicle, renter, account } = deps;
+  const renterText = session.renter
+    ? `Customer: ${session.renter.fullName}`
+    : "Customer";
 
-  const vehicleText = vehicle
-    ? `${vehicle.brand} ${vehicle.model} • ${vehicle.licensePlate}`
-    : "Xe không xác định";
-
-  const renterText = account
-    ? `Khách: ${account.fullName}`
-    : renter
-      ? `Khách: ${renter.identityNumber}`
-      : "Khách hàng";
-
-  const rentalTime = booking
-    ? `${formatDateTime(booking.startTime)} - ${formatDateTime(booking.endTime)}`
-    : formatDateTime(inspection.inspectionAt);
+  const rentalTime = session.booking
+    ? `${formatDateTime(session.booking.startTime)} - ${formatDateTime(session.booking.endTime)}`
+    : "Unknown Time";
 
   return { vehicleText, renterText, rentalTime };
 }
 
 export function CheckInSessionCard({
-  inspection,
+  session,
 }: {
-  inspection: VehicleInspection;
+  session: CheckInSessionListItem;
 }) {
-  const deps = getRelatedEntities(inspection);
-  const { vehicleText, renterText, rentalTime } = buildDisplayTexts(
-    inspection,
-    deps
-  );
-  const isPending = inspection.status === VehicleInspectionStatus.Pending;
+  const { vehicleText, renterText, rentalTime } = buildDisplayTexts(session);
+  const isPending = session.status === "Pending";
 
   function InfoSection() {
     return (
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between gap-2 flex-wrap">
           <div className="font-semibold truncate">{vehicleText}</div>
-          <StatusBadge status={inspection.status} />
+          <StatusBadge status={session.status} />
         </div>
         <div className="mt-1 text-sm text-muted-foreground truncate">
           {rentalTime}
@@ -96,23 +62,40 @@ export function CheckInSessionCard({
   }
 
   function ActionSection() {
+    // Determine the appropriate URL based on status and currentStep
+    const getActionUrl = () => {
+      if (isPending && session.currentStep) {
+        // Link directly to the current step for pending sessions
+        const step = session.currentStep;
+        if (step >= 1 && step <= 5) {
+          return `/staff/checkin-session/${session.inspectionId}/step${step}`;
+        }
+        // Fallback to step1 if step is invalid
+        return `/staff/checkin-session/${session.inspectionId}/step1`;
+      }
+      // For non-pending sessions, go to detail page (which will handle redirect if needed)
+      return `/staff/checkin-session/detail/${session.inspectionId}`;
+    };
+
+    const getActionLabel = () => {
+      if (isPending) {
+        if (session.currentStep && session.currentStep > 1) {
+          return `Continue Step ${session.currentStep}`;
+        }
+        return "Continue Check-in";
+      }
+      return "View Details";
+    };
+
     return (
       <div className="w-44 shrink-0 flex items-center">
         {isPending ? (
           <Button asChild className="w-full">
-            <Link
-              href={`/staff/checkin-session/${inspection.inspectionId}/step1`}
-            >
-              Tiếp tục check-in
-            </Link>
+            <Link href={getActionUrl()}>{getActionLabel()}</Link>
           </Button>
         ) : (
           <Button asChild variant="outline" className="w-full">
-            <Link
-              href={`/staff/checkin-session/detail/${inspection.inspectionId}`}
-            >
-              Xem chi tiết
-            </Link>
+            <Link href={getActionUrl()}>{getActionLabel()}</Link>
           </Button>
         )}
       </div>

@@ -1,10 +1,7 @@
-export function StepIndicator({ current }: { current: 1 | 2 | 3 | 4 }) {
-  const steps = [
-    "Kiểm tra giấy tờ",
-    "Bàn giao & kiểm tra xe",
-    "Ký hợp đồng",
-    "Thanh toán",
-  ];
+import { CHECKIN_SESSION_STEPS } from "@/packages/types/checkin";
+
+export function StepIndicator({ current }: { current: 1 | 2 | 3 | 4 | 5 }) {
+  const steps = CHECKIN_SESSION_STEPS.map((step) => step.title);
 
   return (
     <div className="flex items-center gap-3">
@@ -29,7 +26,7 @@ function StepItem({
 }: {
   index: number;
   label: string;
-  current: 1 | 2 | 3 | 4;
+  current: 1 | 2 | 3 | 4 | 5;
   isLast: boolean;
 }) {
   const stepNumber = index + 1;

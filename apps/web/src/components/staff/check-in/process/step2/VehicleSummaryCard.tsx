@@ -21,7 +21,7 @@ export function VehicleSummaryCard({ info }: { info: VehicleInfo }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Thông tin xe</CardTitle>
+        <CardTitle>Vehicle Information</CardTitle>
       </CardHeader>
       <CardContent className="space-y-2 text-sm">
         {info.imageUrl ? (
@@ -35,18 +35,18 @@ export function VehicleSummaryCard({ info }: { info: VehicleInfo }) {
             />
           </div>
         ) : null}
-        <Row label="Biển số" value={info.licensePlate} />
+        <Row label="License Plate" value={info.licensePlate} />
         <Row label="Model" value={`${info.brand} ${info.model}`} />
-        <Row label="Thương hiệu" value={info.brand} />
-        <Row label="Năm" value={info.year ? String(info.year) : "—"} />
+        <Row label="Brand" value={info.brand} />
+        <Row label="Year" value={info.year ? String(info.year) : "—"} />
         <Row
-          label="Số km (DB)"
+          label="Odometer (DB)"
           value={
             typeof info.odometerKm === "number" ? `${info.odometerKm} km` : "—"
           }
         />
         <Row
-          label="Mức pin (DB)"
+          label="Battery Level (DB)"
           value={
             typeof info.batteryLevel === "number"
               ? `${info.batteryLevel}%`
@@ -54,16 +54,16 @@ export function VehicleSummaryCard({ info }: { info: VehicleInfo }) {
           }
         />
         <Row
-          label="Dung lượng pin"
+          label="Battery Capacity"
           value={
             typeof info.batteryCapacity === "number"
               ? `${info.batteryCapacity} Wh`
               : "—"
           }
         />
-        <Row label="Trạng thái xe" value={info.status || "—"} />
+        <Row label="Vehicle Status" value={info.status || "—"} />
         <Row
-          label="Bảo dưỡng gần nhất"
+          label="Last Maintenance"
           value={info.lastServiceDate ? toLocal(info.lastServiceDate) : "—"}
         />
       </CardContent>

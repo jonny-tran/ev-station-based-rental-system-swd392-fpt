@@ -23,12 +23,17 @@ export function VehicleInputs({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Nhập dữ liệu</CardTitle>
+        <CardTitle>Input Data</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Field
-            label="Số km Odometer"
+            label={
+              <>
+                Odometer (km)
+                <span className="text-red-600"> *</span>
+              </>
+            }
             error={errors?.odometerKm}
             input={
               <Input
@@ -42,7 +47,12 @@ export function VehicleInputs({
             }
           />
           <Field
-            label="Mức pin (%)"
+            label={
+              <>
+                Battery Level (%)
+                <span className="text-red-600"> *</span>
+              </>
+            }
             error={errors?.batteryLevel}
             input={
               <Input
@@ -59,7 +69,7 @@ export function VehicleInputs({
         </div>
 
         <Field
-          label="Ghi chú tình trạng xe"
+          label="Vehicle Condition Notes"
           input={
             <Textarea
               value={values.conditionNotes ?? ""}
@@ -71,7 +81,7 @@ export function VehicleInputs({
           }
         />
         <Field
-          label="Ghi chú hư hỏng (nếu có)"
+          label="Damage Notes (if any)"
           input={
             <Textarea
               value={values.damageNotes ?? ""}
@@ -92,7 +102,7 @@ function Field({
   input,
   error,
 }: {
-  label: string;
+  label: React.ReactNode;
   input: React.ReactNode;
   error?: string;
 }) {
@@ -100,11 +110,7 @@ function Field({
     <div className="space-y-1">
       <div className="text-sm font-medium">{label}</div>
       {input}
-      {error ? (
-        <div className="text-xs text-red-600">{error}</div>
-      ) : null}
+      {error ? <div className="text-xs text-red-600">{error}</div> : null}
     </div>
   );
 }
-
-

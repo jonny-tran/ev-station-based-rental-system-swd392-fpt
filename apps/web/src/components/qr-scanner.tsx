@@ -5,11 +5,13 @@ import { Html5QrcodeScanner } from "html5-qrcode";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Camera, RotateCcw, QrCode } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useQRCodeValidation, setRouter } from "@/stores/checkin-session.store";
 
 interface QRScannerProps {
-  onScanSuccess: (bookingId: string) => void;
-  onScanError: (error: string) => void;
-  onRetry: () => void;
+  onScanSuccess?: (bookingId: string) => void;
+  onScanError?: (error: string) => void;
+  onRetry?: () => void;
   error?: string | null;
 }
 
@@ -19,16 +21,30 @@ export function QRScanner({
   onRetry,
   error,
 }: QRScannerProps) {
+  const router = useRouter();
+  const {
+    validatedBooking,
+    isValidationLoading,
+    validationError,
+    validateQRCode,
+    clearValidation,
+  } = useQRCodeValidation();
+
+  // Set router in store for navigation
+  useEffect(() => {
+    setRouter(router);
+  }, [router]);
+
   const scannerRef = useRef<Html5QrcodeScanner | null>(null);
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [isInitializing, setIsInitializing] = useState(false);
   const [scannedText, setScannedText] = useState<string | null>(null);
 
-  // Sử dụng ref để lưu callback, tránh infinite loop
+  // Use ref to store callback, avoiding infinite loop
   const onScanSuccessRef = useRef(onScanSuccess);
   const onScanErrorRef = useRef(onScanError);
 
-  // Cập nhật ref khi callback thay đổi
+  // Update ref when callback changes
   useEffect(() => {
     onScanSuccessRef.current = onScanSuccess;
   }, [onScanSuccess]);
@@ -44,9 +60,9 @@ export function QRScanner({
     setScannedText(null);
 
     try {
-      // Tạo scanner với cấu hình tối ưu
+      // Create scanner with optimized configuration
       const scanner = new Html5QrcodeScanner(
-        "reader", // ID của div container
+        "reader", // ID of div container
         {
           fps: 10,
           qrbox: { width: 250, height: 250 },
@@ -59,34 +75,43 @@ export function QRScanner({
         false // verbose = false
       );
 
-      // Render scanner với callbacks
+      // Render scanner with callbacks
       scanner.render(
-        (decodedText) => {
-          console.log("QR Code detected:", decodedText);
+        async (decodedText) => {
           setScannedText(decodedText);
           const bookingId = decodedText.trim();
+
           if (bookingId) {
-            onScanSuccessRef.current(bookingId);
+            try {
+              // Stop camera first
+              stopCamera();
+
+              // Validate QR code using store
+              await validateQRCode(bookingId);
+
+              // Call optional callback if provided
+              onScanSuccessRef.current?.(bookingId);
+
+              // The store will handle session creation automatically after validation
+              // and navigate to the correct step1 page with inspectionId
+              // No need to navigate here as the store will handle it
+            } catch (error) {
+              onScanErrorRef.current?.(
+                error instanceof Error ? error.message : "Validation failed"
+              );
+            }
           }
         },
         (error) => {
-          // Chỉ log lỗi quan trọng, bỏ qua lỗi thường gặp
-          if (
-            error &&
-            !error.includes("NotFoundException") &&
-            !error.includes("No QR code found")
-          ) {
-            console.log("QR scan error:", error);
-          }
+          // Ignore common scan errors
         }
       );
 
       scannerRef.current = scanner;
       setIsCameraActive(true);
     } catch (err) {
-      console.error("Failed to initialize QR scanner:", err);
-      onScanErrorRef.current(
-        "Không thể khởi tạo camera. Vui lòng kiểm tra quyền truy cập camera."
+      onScanErrorRef.current?.(
+        "Unable to initialize camera. Please check camera access permissions."
       );
     } finally {
       setIsInitializing(false);
@@ -104,10 +129,11 @@ export function QRScanner({
 
   const handleRetry = () => {
     stopCamera();
-    onRetry();
+    clearValidation();
+    onRetry?.();
   };
 
-  // Cleanup khi component unmount
+  // Cleanup when component unmounts
   useEffect(() => {
     return () => {
       if (scannerRef.current) {
@@ -128,7 +154,7 @@ export function QRScanner({
             <h2 className="text-2xl font-bold text-white">QR Code Scanner</h2>
           </div>
           <p className="text-blue-100 mt-2">
-            Quét mã QR từ renter để bắt đầu check-in
+            Scan QR code from renter to start check-in
           </p>
         </div>
 
@@ -147,11 +173,11 @@ export function QRScanner({
                 <div className="text-center space-y-2">
                   <p className="text-xl text-gray-700 font-semibold">
                     {isInitializing
-                      ? "Đang khởi tạo camera..."
-                      : "Camera chưa được bật"}
+                      ? "Initializing camera..."
+                      : "Camera is not active"}
                   </p>
                   <p className="text-gray-500">
-                    Nhấn nút bên dưới để bắt đầu quét
+                    Press the button below to start scanning
                   </p>
                 </div>
               </div>
@@ -167,7 +193,7 @@ export function QRScanner({
                 </div>
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold text-green-800 mb-2">
-                    Kết quả quét QR Code:
+                    QR Code scan result:
                   </h3>
                   <div className="bg-white rounded-lg p-4 border border-green-200">
                     <code className="text-sm font-mono text-gray-800 break-all">
@@ -184,32 +210,37 @@ export function QRScanner({
             {!isCameraActive ? (
               <Button
                 onClick={startCamera}
-                disabled={isInitializing}
+                disabled={isInitializing || isValidationLoading}
                 size="lg"
                 className="flex items-center gap-3 px-8 py-4 text-lg font-semibold bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-xl transition-all duration-200"
               >
                 <Camera className="h-6 w-6" />
-                {isInitializing ? "Đang khởi tạo..." : "Bắt đầu quét"}
+                {isInitializing
+                  ? "Initializing..."
+                  : isValidationLoading
+                    ? "Validating..."
+                    : "Start scanning"}
               </Button>
             ) : (
               <Button
                 onClick={stopCamera}
                 variant="outline"
                 size="lg"
+                disabled={isValidationLoading}
                 className="flex items-center gap-3 px-8 py-4 text-lg font-semibold border-2 border-red-300 text-red-600 hover:bg-red-50 shadow-lg hover:shadow-xl transition-all duration-200"
               >
                 <Camera className="h-6 w-6" />
-                Dừng quét
+                Stop scanning
               </Button>
             )}
           </div>
 
           {/* Error Message */}
-          {error && (
+          {(error || validationError) && (
             <Alert variant="destructive" className="mt-6">
               <AlertCircle className="h-5 w-5" />
               <AlertDescription className="flex items-center justify-between">
-                <span className="text-base">{error}</span>
+                <span className="text-base">{error || validationError}</span>
                 <Button
                   variant="outline"
                   size="sm"
@@ -217,23 +248,31 @@ export function QRScanner({
                   className="ml-4"
                 >
                   <RotateCcw className="h-4 w-4 mr-2" />
-                  Thử lại
+                  Try again
                 </Button>
               </AlertDescription>
             </Alert>
           )}
-        </div>
 
-        {/* Footer */}
-        <div className="bg-gray-50 px-8 py-4 border-t border-gray-200">
-          <div className="flex items-center justify-between text-sm text-gray-500">
-            <div className="flex items-center gap-4">
-              <span>Built with ❤️ using html5-qrcode</span>
-            </div>
-            <div className="flex items-center gap-4">
-              <span>Scanning is done locally on your device</span>
-            </div>
-          </div>
+          {/* Validation Success Message */}
+          {validatedBooking && (
+            <Alert className="mt-6 border-green-200 bg-green-50">
+              <AlertCircle className="h-5 w-5 text-green-600" />
+              <AlertDescription className="text-green-800">
+                <div className="font-semibold mb-2">
+                  QR Code validated successfully!
+                </div>
+                <div className="text-sm">
+                  <div>Booking ID: {validatedBooking.booking.bookingId}</div>
+                  <div>Renter: {validatedBooking.renter.fullName}</div>
+                  <div>
+                    Vehicle: {validatedBooking.vehicle.brand}{" "}
+                    {validatedBooking.vehicle.model}
+                  </div>
+                </div>
+              </AlertDescription>
+            </Alert>
+          )}
         </div>
       </div>
     </div>

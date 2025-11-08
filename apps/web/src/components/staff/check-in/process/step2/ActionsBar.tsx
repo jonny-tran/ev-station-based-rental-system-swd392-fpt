@@ -10,7 +10,7 @@ export function ActionsBar({
 }: {
   canContinue: boolean;
   onContinue: () => void;
-  onReject: (reason: string) => void;
+  onReject: () => void;
   onSaveDraft?: () => void;
   canReject?: boolean;
 }) {
@@ -20,16 +20,16 @@ export function ActionsBar({
     <div className="flex items-center justify-end gap-3">
       {onSaveDraft ? (
         <Button variant="secondary" onClick={onSaveDraft}>
-          Lưu tạm
+          Save Draft
         </Button>
       ) : null}
       <ConfirmRejectButton
         canReject={Boolean(canReject)}
-        onConfirm={() => onReject("")}
+        onConfirm={onReject}
       />
 
       <Button onClick={onContinue} disabled={!canContinue}>
-        Phê duyệt & Tiếp tục
+        Approve & Continue
       </Button>
     </div>
   );

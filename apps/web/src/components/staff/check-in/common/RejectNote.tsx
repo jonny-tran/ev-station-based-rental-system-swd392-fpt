@@ -10,10 +10,10 @@ export function RejectNote({
   return (
     <div className="space-y-2">
       <div className="text-sm text-muted-foreground">
-        Ghi chú (lý do từ chối)
+        Note (Rejection Reason)
       </div>
       <Textarea
-        placeholder="Nhập lý do từ chối nếu Reject..."
+        placeholder="Enter rejection reason if rejecting..."
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className="min-h-24"

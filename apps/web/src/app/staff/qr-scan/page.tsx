@@ -21,19 +21,15 @@ export default function StaffQrScanPage() {
       setError(null);
 
       try {
-        // Kiểm tra nếu bookingId có format hợp lệ (chỉ chứa chữ và số)
+        // Check if bookingId has valid format (only contains letters and numbers)
         if (!/^[a-zA-Z0-9-_]+$/.test(bookingId)) {
-          throw new Error("Mã QR không hợp lệ");
+          throw new Error("Invalid QR code");
         }
-
-        // Đơn giản: chỉ cần quét được QR code là chuyển trang
-        console.log("QR Code detected:", bookingId);
-
-        // Chuyển đến trang checkin-session chính (không có ID)
+        // Navigate to main checkin-session page (without ID)
         router.push("/staff/checkin-session");
       } catch (err) {
         const errorMessage =
-          err instanceof Error ? err.message : "Mã QR không hợp lệ";
+          err instanceof Error ? err.message : "Invalid QR code";
         setError(errorMessage);
       } finally {
         setIsValidating(false);
@@ -56,8 +52,8 @@ export default function StaffQrScanPage() {
       <SidebarInset>
         <PageHeader
           crumbs={[
-            { label: "Trang chính Staff", href: "/staff" },
-            { label: "Quét mã QR" },
+            { label: "Staff Dashboard", href: "/staff" },
+            { label: "QR Code Scanner" },
           ]}
         />
 
@@ -70,11 +66,9 @@ export default function StaffQrScanPage() {
                 </div>
                 <div className="text-center space-y-2">
                   <p className="text-2xl font-semibold text-gray-900">
-                    Đang xử lý mã QR...
+                    Processing QR code...
                   </p>
-                  <p className="text-lg text-gray-600">
-                    Vui lòng chờ trong giây lát
-                  </p>
+                  <p className="text-lg text-gray-600">Please wait a moment</p>
                 </div>
               </div>
             ) : (

@@ -45,7 +45,7 @@ export function CheckInSessionPagination({
   const generatePageNumbers = () => {
     const pages = [];
     const maxVisiblePages = 5;
-    
+
     if (totalPages <= maxVisiblePages) {
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i);
@@ -53,12 +53,12 @@ export function CheckInSessionPagination({
     } else {
       const start = Math.max(1, currentPage - 2);
       const end = Math.min(totalPages, start + maxVisiblePages - 1);
-      
+
       for (let i = start; i <= end; i++) {
         pages.push(i);
       }
     }
-    
+
     return pages;
   };
 
@@ -66,10 +66,10 @@ export function CheckInSessionPagination({
     return (
       <div className="flex items-center justify-between">
         <div className="text-sm text-muted-foreground">
-          Hiển thị {totalItems} kết quả
+          Showing {totalItems} results
         </div>
         <div className="flex items-center space-x-2">
-          <span className="text-sm text-muted-foreground">Hiển thị:</span>
+          <span className="text-sm text-muted-foreground">Show:</span>
           <Select
             value={itemsPerPage.toString()}
             onValueChange={(value) => onItemsPerPageChange(Number(value))}
@@ -84,7 +84,7 @@ export function CheckInSessionPagination({
               <SelectItem value="50">50</SelectItem>
             </SelectContent>
           </Select>
-          <span className="text-sm text-muted-foreground">/trang</span>
+          <span className="text-sm text-muted-foreground">/page</span>
         </div>
       </div>
     );
@@ -93,13 +93,13 @@ export function CheckInSessionPagination({
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
       <div className="text-sm text-muted-foreground">
-        Hiển thị {startItem}-{endItem} trong {totalItems} kết quả
+        Showing {startItem}-{endItem} of {totalItems} results
       </div>
-      
+
       <div className="flex items-center space-x-4">
         {/* Items per page selector */}
         <div className="flex items-center space-x-2">
-          <span className="text-sm text-muted-foreground">Hiển thị:</span>
+          <span className="text-sm text-muted-foreground">Show:</span>
           <Select
             value={itemsPerPage.toString()}
             onValueChange={(value) => onItemsPerPageChange(Number(value))}
@@ -114,7 +114,7 @@ export function CheckInSessionPagination({
               <SelectItem value="50">50</SelectItem>
             </SelectContent>
           </Select>
-          <span className="text-sm text-muted-foreground">/trang</span>
+          <span className="text-sm text-muted-foreground">/page</span>
         </div>
 
         {/* Pagination controls */}
@@ -126,9 +126,9 @@ export function CheckInSessionPagination({
             disabled={currentPage === 1}
           >
             <ChevronLeft className="h-4 w-4" />
-            Trước
+            Previous
           </Button>
-          
+
           {generatePageNumbers().map((page) => (
             <Button
               key={page}
@@ -140,14 +140,14 @@ export function CheckInSessionPagination({
               {page}
             </Button>
           ))}
-          
+
           <Button
             variant="outline"
             size="sm"
             onClick={handleNextPage}
             disabled={currentPage === totalPages}
           >
-            Sau
+            Next
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
