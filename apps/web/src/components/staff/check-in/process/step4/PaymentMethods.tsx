@@ -5,7 +5,7 @@ import { RadioGroup } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
 import { PaymentMethod } from "@/packages/types/payment";
 import { PaymentMethodCard } from "./PaymentMethodCard";
-import { CreditCard, Wallet } from "lucide-react";
+import { CreditCard } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface PaymentMethodsProps {
@@ -28,12 +28,6 @@ export function PaymentMethods({
         description: "Pay via VNPay gateway",
         icon: <CreditCard size={18} />,
       },
-      {
-        value: PaymentMethod.Cash,
-        label: "Cash",
-        description: "Pay directly at the counter",
-        icon: <Wallet size={18} />,
-      },
     ],
     []
   );
@@ -52,7 +46,7 @@ export function PaymentMethods({
       <RadioGroup
         value={method}
         onValueChange={setMethod}
-        className="grid grid-cols-1 gap-3 md:grid-cols-2"
+        className="grid grid-cols-1 gap-3"
       >
         {options.map((opt) => (
           <PaymentMethodCard

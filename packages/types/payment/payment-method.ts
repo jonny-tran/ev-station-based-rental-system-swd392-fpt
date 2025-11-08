@@ -4,7 +4,6 @@
 
 export enum PaymentMethod {
   VNPay = "VNPay",
-  Cash = "Cash",
 }
 
 export enum PaymentStatus {

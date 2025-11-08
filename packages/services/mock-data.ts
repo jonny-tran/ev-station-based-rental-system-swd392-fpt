@@ -677,14 +677,15 @@ export const mockData = {
       createdAt: "2025-09-28T11:00:00Z",
       updatedAt: "2025-09-28T11:25:00Z",
     },
-    // Case iii: Paid (Cash)
+    // Case iii: Paid (VNPay)
     {
       id: 3,
       contractId: "contract-completed-1",
       amount: 450000,
       currency: "VND",
       paymentType: "RentalFee",
-      paymentMethod: "Cash",
+      paymentMethod: "VNPay",
+      transactionId: "vnpay-20250928-0003",
       paymentDate: "2025-09-28T18:25:00Z",
       status: "Paid",
       createdAt: "2025-09-28T18:00:00Z",

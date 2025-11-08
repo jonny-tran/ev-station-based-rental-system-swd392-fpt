@@ -162,7 +162,7 @@ CREATE TABLE [Payment] (
   [RefundTransactionID] nvarchar(100),
   [ReceiptUrl] nvarchar(255),
   [PaymentDate] datetime2 NOT NULL DEFAULT (GETDATE()),
-  [PaymentMethod] nvarchar(255) NOT NULL CHECK ([PaymentMethod] IN ('VNPay', 'Cash')),
+  [PaymentMethod] nvarchar(255) NOT NULL CHECK ([PaymentMethod] IN ('VNPay')),
   [Status] nvarchar(255) NOT NULL CHECK ([Status] IN ('Paid', 'Pending', 'Refund', 'Failed', 'Refunded')) DEFAULT 'Pending'
 )
 GO

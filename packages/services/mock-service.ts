@@ -299,14 +299,8 @@ export const mockService = {
       currency: "VND",
       paymentType: PaymentType.Penalty,
       paymentMethod: params.method,
-      status:
-        params.method === PaymentMethod.Cash
-          ? PaymentStatus.Paid
-          : PaymentStatus.Pending,
-      paymentDate:
-        params.method === PaymentMethod.Cash
-          ? new Date().toISOString()
-          : new Date().toISOString(),
+      status: PaymentStatus.Pending,
+      paymentDate: new Date().toISOString(),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
