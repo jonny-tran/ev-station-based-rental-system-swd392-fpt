@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { Contract } from "@/packages/types/contract";
-import { mockService } from "@/packages/services/mock-service";
+import { useEffect, useState } from "react";
+import { ContractListItem } from "@/packages/types/contract/contract-api";
+import { useContractsList } from "@/stores/contract.store";
 import { ContractCard } from "./ContractCard";
 import { ContractFilters, ContractFilterState } from "./ContractFilters";
 import {
@@ -13,64 +13,91 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { ContractStatus } from "@/packages/types/contract/contract-status";
 
 const PAGE_SIZE = 10;
 
 export function ContractList() {
-  const [items, setItems] = useState<Contract[]>([]);
-  const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(1);
+  const {
+    contractsList,
+    contractsListTotal,
+    contractsListPage,
+    contractsListPageSize,
+    contractsListTotalPages,
+    isLoadingContractsList,
+    contractsListError,
+    fetchContractsList,
+    refreshContractsList,
+    setContractsListPage,
+    setContractsListPageSize,
+  } = useContractsList();
+
   const [filters, setFilters] = useState<ContractFilterState>({
     keyword: "",
     status: "All",
   });
 
-  const totalPages = useMemo(
-    () => Math.max(1, Math.ceil(total / PAGE_SIZE)),
-    [total]
-  );
-
-  const load = () => {
-    const { items, total } = mockService.getContracts({
-      page,
-      pageSize: PAGE_SIZE,
-      status: filters.status,
-      keyword: filters.keyword,
+  const load = async () => {
+    await fetchContractsList({
+      page: contractsListPage,
+      pageSize: contractsListPageSize,
+      status:
+        filters.status !== "All"
+          ? (filters.status as ContractStatus)
+          : undefined,
+      search: filters.keyword || undefined,
     });
-    setItems(items);
-    setTotal(total);
   };
 
   useEffect(() => {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, filters.keyword, filters.status]);
+  }, [contractsListPage, filters.keyword, filters.status]);
 
   const handleChanged = () => {
-    load();
+    refreshContractsList();
   };
+
+  if (isLoadingContractsList) {
+    return (
+      <div className="h-[400px] border rounded-lg flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-gray-500">Loading contracts...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (contractsListError) {
+    return (
+      <div className="p-4 border rounded-lg bg-red-50 border-red-200">
+        <p className="text-red-600">{contractsListError}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
       <ContractFilters
         value={filters}
         onChange={(v) => {
-          setPage(1);
+          setContractsListPage(1);
           setFilters(v);
         }}
       />
 
       <div className="space-y-3">
-        {items.map((c) => (
+        {contractsList.map((c) => (
           <ContractCard
             key={c.contractId}
             contract={c}
             onChanged={handleChanged}
           />
         ))}
-        {items.length === 0 && (
+        {contractsList.length === 0 && (
           <div className="text-sm text-muted-foreground p-8 text-center border rounded-md">
-            Không có hợp đồng nào phù hợp.
+            No contracts found.
           </div>
         )}
       </div>
@@ -83,18 +110,23 @@ export function ContractList() {
                 href="#"
                 onClick={(e) => {
                   e.preventDefault();
-                  setPage((p) => Math.max(1, p - 1));
+                  if (contractsListPage > 1) {
+                    setContractsListPage(contractsListPage - 1);
+                  }
                 }}
+                className={
+                  contractsListPage === 1 ? "pointer-events-none opacity-50" : ""
+                }
               />
             </PaginationItem>
-            {Array.from({ length: totalPages }).map((_, i) => (
+            {Array.from({ length: contractsListTotalPages }).map((_, i) => (
               <PaginationItem key={i}>
                 <PaginationLink
                   href="#"
-                  isActive={page === i + 1}
+                  isActive={contractsListPage === i + 1}
                   onClick={(e) => {
                     e.preventDefault();
-                    setPage(i + 1);
+                    setContractsListPage(i + 1);
                   }}
                 >
                   {i + 1}
@@ -106,8 +138,15 @@ export function ContractList() {
                 href="#"
                 onClick={(e) => {
                   e.preventDefault();
-                  setPage((p) => Math.min(totalPages, p + 1));
+                  if (contractsListPage < contractsListTotalPages) {
+                    setContractsListPage(contractsListPage + 1);
+                  }
                 }}
+                className={
+                  contractsListPage >= contractsListTotalPages
+                    ? "pointer-events-none opacity-50"
+                    : ""
+                }
               />
             </PaginationItem>
           </PaginationContent>

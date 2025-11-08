@@ -4,8 +4,10 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Contract } from "@/packages/types/contract";
 import { ContractStatus } from "@/packages/types/enum";
-import { mockService } from "@/packages/services/mock-service";
-import { useTransition } from "react";
+import { ContractService } from "@/packages/services/contract.service";
+import { useTransition, useState } from "react";
+import { ContractApiError } from "@/packages/types/contract/contract-api";
+import { toast } from "@/lib/toast";
 
 interface Props {
   contract: Contract;
@@ -14,11 +16,39 @@ interface Props {
 
 export function RenterContractActions({ contract, onChanged }: Props) {
   const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<string>("");
 
   const handleRenterSign = () => {
-    startTransition(() => {
-      const updated = mockService.signContractByRenter(contract.contractId);
-      onChanged?.(updated);
+    startTransition(async () => {
+      try {
+        setError("");
+        const response = await ContractService.renterSignContract(
+          contract.contractId
+        );
+
+        if (response.data) {
+          // Update contract with new status
+          const updatedContract: Contract = {
+            ...contract,
+            signedByRenter: response.data.signedByRenter,
+            signedByStaff: response.data.signedByStaff,
+            status: response.data.status,
+            signedAt: response.data.signedAt,
+            updatedAt: response.data.updatedAt,
+          };
+
+          toast.success("Contract signed successfully");
+          onChanged?.(updatedContract);
+        }
+      } catch (err) {
+        const errorMessage =
+          err instanceof ContractApiError
+            ? err.message
+            : "Failed to sign contract. Please try again.";
+        setError(errorMessage);
+        toast.error(errorMessage);
+        console.error("Error signing contract:", err);
+      }
     });
   };
 
@@ -27,7 +57,7 @@ export function RenterContractActions({ contract, onChanged }: Props) {
       if (!contract.signedByRenter) {
         return (
           <Button size="sm" onClick={handleRenterSign} disabled={isPending}>
-            Ký kết
+            {isPending ? "Signing..." : "Sign"}
           </Button>
         );
       }
@@ -35,7 +65,7 @@ export function RenterContractActions({ contract, onChanged }: Props) {
         return (
           <Button asChild size="sm" variant="outline">
             <Link href={`/dashboard/contract/${contract.contractId}/detail`}>
-              Xem chi tiết
+              View Details
             </Link>
           </Button>
         );
@@ -44,7 +74,7 @@ export function RenterContractActions({ contract, onChanged }: Props) {
         return (
           <Button asChild size="sm" variant="outline">
             <Link href={`/dashboard/contract/${contract.contractId}/detail`}>
-              Xem chi tiết
+              View Details
             </Link>
           </Button>
         );
@@ -58,19 +88,20 @@ export function RenterContractActions({ contract, onChanged }: Props) {
       return (
         <Button asChild size="sm" variant="outline">
           <Link href={`/dashboard/contract/${contract.contractId}/detail`}>
-            Xem chi tiết
+            View Details
           </Link>
         </Button>
       );
 
     default:
-      // Draft không hiển thị ở danh sách renter theo spec, nhưng fallback nếu có
+      // Draft contracts are not shown in renter list per spec, but fallback if needed
       return (
         <Button asChild size="sm" variant="secondary">
           <Link href={`/dashboard/contract/${contract.contractId}/detail`}>
-            Xem chi tiết
+            View Details
           </Link>
         </Button>
       );
   }
 }
+

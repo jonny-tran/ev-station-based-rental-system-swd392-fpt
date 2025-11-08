@@ -11,7 +11,11 @@ import { mockService } from "@/packages/services/mock-service";
 
 export default function InspectionStep4Page() {
   const { inspectionId } = useParams<{ inspectionId: string }>();
-  const inspection = mockService.getVehicleInspectionById(inspectionId);
+  // Convert string to number since mockService expects number
+  const inspectionIdNum = parseInt(inspectionId, 10);
+  const inspection = isNaN(inspectionIdNum)
+    ? undefined
+    : mockService.getVehicleInspectionById(inspectionIdNum);
   const contractId = inspection?.contractId;
 
   return (
@@ -20,13 +24,13 @@ export default function InspectionStep4Page() {
       <SidebarInset>
         <PageHeader
           crumbs={[
-            { label: "Trang chính Staff", href: "/staff" },
-            { label: "Phiên Check-in", href: "/staff/checkin-session" },
-            { label: "Bước 4" },
+            { label: "Staff Home", href: "/staff" },
+            { label: "Check-in Session", href: "/staff/checkin-session" },
+            { label: "Step 4" },
           ]}
         />
         <div className="flex flex-1 flex-col gap-6 p-6 pt-0">
-          <h1 className="text-2xl font-semibold">Bước 4 – Thanh toán</h1>
+          <h1 className="text-2xl font-semibold">Step 4 – Payment</h1>
           <StepIndicator current={4} />
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
             <div className="lg:col-span-2">

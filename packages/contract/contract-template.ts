@@ -1,9 +1,9 @@
 export const CONTRACT_TEMPLATE = `<!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hợp đồng thuê xe điện</title>
+    <title>Electric Vehicle Rental Contract</title>
     <style>
         body {
             font-family: 'Times New Roman', serif;
@@ -100,31 +100,31 @@ export const CONTRACT_TEMPLATE = `<!DOCTYPE html>
 </head>
 <body>
     <div class="header">
-        <div class="title">HỢP ĐỒNG THUÊ XE ĐIỆN</div>
-        <div class="subtitle">Electric Vehicle Rental Contract</div>
+        <div class="title">ELECTRIC VEHICLE RENTAL CONTRACT</div>
+        <div class="subtitle">Electric Vehicle Rental Agreement</div>
     </div>
 
     <div class="section">
-        <div class="section-title">THÔNG TIN CÁC BÊN</div>
+        <div class="section-title">PARTY INFORMATION</div>
         <div class="info-grid">
             <div class="info-item">
-                <span class="info-label">Bên cho thuê:</span>
-                <span class="info-value">Công ty TNHH EV Station</span>
+                <span class="info-label">Lessor:</span>
+                <span class="info-value">EV Station Co., Ltd.</span>
             </div>
             <div class="info-item">
-                <span class="info-label">Địa chỉ:</span>
-                <span class="info-value">123 Đường ABC, Quận 1, TP.HCM</span>
+                <span class="info-label">Address:</span>
+                <span class="info-value">123 ABC Street, District 1, Ho Chi Minh City</span>
             </div>
             <div class="info-item">
-                <span class="info-label">Bên thuê:</span>
+                <span class="info-label">Lessee:</span>
                 <span class="info-value">[RENTER_NAME]</span>
             </div>
             <div class="info-item">
-                <span class="info-label">CCCD/CMND:</span>
+                <span class="info-label">ID Number:</span>
                 <span class="info-value">[RENTER_ID]</span>
             </div>
             <div class="info-item">
-                <span class="info-label">Số điện thoại:</span>
+                <span class="info-label">Phone Number:</span>
                 <span class="info-value">[RENTER_PHONE]</span>
             </div>
             <div class="info-item">
@@ -135,93 +135,93 @@ export const CONTRACT_TEMPLATE = `<!DOCTYPE html>
     </div>
 
     <div class="section">
-        <div class="section-title">THÔNG TIN XE THUÊ</div>
+        <div class="section-title">VEHICLE INFORMATION</div>
         <div class="info-grid">
             <div class="info-item">
-                <span class="info-label">Biển số xe:</span>
+                <span class="info-label">License Plate:</span>
                 <span class="info-value">[LICENSE_PLATE]</span>
             </div>
             <div class="info-item">
-                <span class="info-label">Model xe:</span>
+                <span class="info-label">Vehicle Model:</span>
                 <span class="info-value">[VEHICLE_MODEL]</span>
             </div>
             <div class="info-item">
-                <span class="info-label">Dung lượng pin:</span>
+                <span class="info-label">Battery Capacity:</span>
                 <span class="info-value">[BATTERY_CAPACITY] kWh</span>
             </div>
             <div class="info-item">
-                <span class="info-label">Số km hiện tại:</span>
+                <span class="info-label">Current Odometer:</span>
                 <span class="info-value">[CURRENT_ODO] km</span>
             </div>
         </div>
     </div>
 
     <div class="section">
-        <div class="section-title">THÔNG TIN THUÊ</div>
+        <div class="section-title">RENTAL INFORMATION</div>
         <div class="info-grid">
             <div class="info-item">
-                <span class="info-label">Ngày bắt đầu:</span>
+                <span class="info-label">Start Date:</span>
                 <span class="info-value">[START_DATE]</span>
             </div>
             <div class="info-item">
-                <span class="info-label">Ngày kết thúc:</span>
+                <span class="info-label">End Date:</span>
                 <span class="info-value">[END_DATE]</span>
             </div>
             <div class="info-item">
-                <span class="info-label">Địa điểm nhận xe:</span>
+                <span class="info-label">Pickup Location:</span>
                 <span class="info-value">[PICKUP_LOCATION]</span>
             </div>
             <div class="info-item">
-                <span class="info-label">Địa điểm trả xe:</span>
+                <span class="info-label">Return Location:</span>
                 <span class="info-value">[RETURN_LOCATION]</span>
             </div>
             <div class="info-item">
-                <span class="info-label">Tổng tiền thuê:</span>
-                <span class="info-value">[TOTAL_PRICE] VNĐ</span>
+                <span class="info-label">Total Rental Fee:</span>
+                <span class="info-value">[TOTAL_PRICE] VND</span>
             </div>
             
         </div>
     </div>
 
     <div class="section">
-        <div class="section-title">ĐIỀU KHOẢN VÀ ĐIỀU KIỆN</div>
+        <div class="section-title">TERMS AND CONDITIONS</div>
         <div class="terms">
-            <p><strong>Điều 1:</strong> Bên thuê cam kết sử dụng xe đúng mục đích, tuân thủ luật giao thông và các quy định của pháp luật.</p>
-            <p><strong>Điều 2:</strong> Bên thuê có trách nhiệm bảo quản xe, không được cho người khác thuê lại hoặc sử dụng vào mục đích trái pháp luật.</p>
-            <p><strong>Điều 3:</strong> Trong trường hợp xe bị hư hỏng do lỗi của bên thuê, bên thuê phải chịu chi phí sửa chữa.</p>
-            <p><strong>Điều 4:</strong> Bên thuê phải trả xe đúng thời gian quy định. Nếu trả muộn sẽ bị phạt theo quy định.</p>
-            <p><strong>Điều 5:</strong> Hợp đồng này có hiệu lực từ ngày ký và chấm dứt khi bên thuê trả xe và thanh toán đầy đủ.</p>
-            <p><strong>Điều 6 (Đặt cọc):</strong> Bên thuê đặt cọc một khoản tiền để đảm bảo thực hiện hợp đồng. Khoản đặt cọc sẽ được hoàn trả khi bên thuê hoàn tất nghĩa vụ và không phát sinh vi phạm, hư hỏng.</p>
-            <p><strong>Điều 7 (Bảo hiểm & tai nạn):</strong> Xe được mua bảo hiểm theo quy định. Trường hợp xảy ra tai nạn, các bên phối hợp làm việc với cơ quan chức năng và đơn vị bảo hiểm. Mọi chi phí ngoài phạm vi bảo hiểm do bên gây ra lỗi chịu trách nhiệm.</p>
-            <p><strong>Điều 8 (Kiểm tra định kỳ):</strong> Bên cho thuê có quyền kiểm tra xe định kỳ trong thời hạn thuê với thông báo trước hợp lý cho bên thuê.</p>
-            <p><strong>Điều 9 (Mất giấy tờ xe):</strong> Nếu bên thuê làm mất giấy tờ xe, bên thuê chịu chi phí cấp lại và mọi tổn thất phát sinh liên quan.</p>
-            <p><strong>Điều 10 (Giải quyết tranh chấp):</strong> Tranh chấp phát sinh được ưu tiên giải quyết thông qua thương lượng. Nếu không đạt thỏa thuận, tranh chấp sẽ được giải quyết tại Tòa án/Trọng tài có thẩm quyền.</p>
-            <p><strong>Điều 11 (Hiệu lực & lưu giữ):</strong> Hợp đồng có hiệu lực kể từ ngày tạo/hoặc kể từ khi cả hai bên ký (tùy quy định nội bộ). Hợp đồng được lập thành 02 bản có giá trị pháp lý như nhau, mỗi bên giữ 01 bản.</p>
+            <p><strong>Article 1:</strong> The lessee commits to using the vehicle for proper purposes, complying with traffic laws and legal regulations.</p>
+            <p><strong>Article 2:</strong> The lessee is responsible for maintaining the vehicle and shall not sublease it to others or use it for illegal purposes.</p>
+            <p><strong>Article 3:</strong> In case of vehicle damage due to the lessee's fault, the lessee must bear the repair costs.</p>
+            <p><strong>Article 4:</strong> The lessee must return the vehicle on time as specified. Late returns will incur penalties as regulated.</p>
+            <p><strong>Article 5:</strong> This contract is effective from the signing date and terminates when the lessee returns the vehicle and makes full payment.</p>
+            <p><strong>Article 6 (Deposit):</strong> The lessee deposits an amount to guarantee contract performance. The deposit will be refunded when the lessee completes obligations without violations or damages.</p>
+            <p><strong>Article 7 (Insurance & Accidents):</strong> The vehicle is insured as required by law. In case of accidents, parties shall cooperate with authorities and insurance companies. Any costs beyond insurance coverage shall be borne by the party at fault.</p>
+            <p><strong>Article 8 (Periodic Inspection):</strong> The lessor has the right to inspect the vehicle periodically during the rental period with reasonable notice to the lessee.</p>
+            <p><strong>Article 9 (Lost Vehicle Documents):</strong> If the lessee loses vehicle documents, the lessee shall bear the cost of reissuance and any related losses.</p>
+            <p><strong>Article 10 (Dispute Resolution):</strong> Arising disputes shall be resolved through negotiation first. If no agreement is reached, disputes will be resolved at competent courts/arbitration.</p>
+            <p><strong>Article 11 (Validity & Retention):</strong> The contract is effective from the creation date/or from when both parties sign (according to internal regulations). The contract is made in 02 copies with equal legal value, each party keeps 01 copy.</p>
         </div>
     </div>
 
     <div class="signature-section">
         <div class="signature-box">
-            <div class="signature-placeholder">Chữ ký bên thuê</div>
+            <div class="signature-placeholder">Lessee Signature</div>
             <div class="signature-image" id="renter-signature">
                 <<SIGN_RENTER>>
             </div>
             <div class="signature-placeholder">[RENTER_NAME]</div>
-            <div class="signature-placeholder">Ngày: [SIGN_DATE_RENTER]</div>
+            <div class="signature-placeholder">Date: [SIGN_DATE_RENTER]</div>
         </div>
         <div class="signature-box">
-            <div class="signature-placeholder">Chữ ký bên cho thuê</div>
+            <div class="signature-placeholder">Lessor Signature</div>
             <div class="signature-image" id="staff-signature">
                 <<SIGN_STAFF>>
             </div>
-            <div class="signature-placeholder">Nhân viên: [STAFF_NAME]</div>
-            <div class="signature-placeholder">Ngày: [SIGN_DATE_STAFF]</div>
+            <div class="signature-placeholder">Staff: [STAFF_NAME]</div>
+            <div class="signature-placeholder">Date: [SIGN_DATE_STAFF]</div>
         </div>
     </div>
 
     <div class="contract-id">
-        <p>Mã hợp đồng: [CONTRACT_ID]</p>
-        <p>Ngày tạo: [CONTRACT_CREATED_DATE]</p>
+        <p>Contract ID: [CONTRACT_ID]</p>
+        <p>Created Date: [CONTRACT_CREATED_DATE]</p>
     </div>
 </body>
 </html>`;

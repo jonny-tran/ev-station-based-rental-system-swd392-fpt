@@ -4,8 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Contract } from "@/packages/types/contract";
 import { RenterContractStatusBadge } from "./RenterContractStatusBadge";
 import { RenterContractActions } from "./RenterContractActions";
-import { useEffect, useState } from "react";
-import { mockService } from "@/packages/services/mock-service";
+import { useAuthStore } from "@/stores/auth.store";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface Props {
@@ -15,18 +14,9 @@ interface Props {
 }
 
 export function RenterContractCard({ contract, renterId, onChanged }: Props) {
-  const [displayName, setDisplayName] = useState<string>("Bạn");
-  const [avatarUrl, setAvatarUrl] = useState<string | undefined>(undefined);
-
-  useEffect(() => {
-    // Hiển thị tiêu đề là tên Renter hoặc "Bạn"
-    const renter = mockService.getRenterById(renterId || "");
-    const account = renter
-      ? mockService.getAccountById(renter.accountId)
-      : undefined;
-    setDisplayName(account?.fullName || "Bạn");
-    setAvatarUrl(account?.avatarUrl);
-  }, [renterId]);
+  const { user } = useAuthStore();
+  const displayName = user?.fullName || "You";
+  const avatarUrl = undefined; // TODO: Add avatar URL to user object if needed
 
   return (
     <Card className="px-4 py-3 group hover:shadow-sm transition-shadow">
@@ -51,18 +41,18 @@ export function RenterContractCard({ contract, renterId, onChanged }: Props) {
             <RenterContractStatusBadge status={contract.status} />
           </div>
           <div className="mt-1 text-sm text-muted-foreground flex flex-wrap items-center gap-x-3 gap-y-1">
-            <span className="truncate">Mã HĐ: {contract.contractId}</span>
+            <span className="truncate">Contract ID: {contract.contractId}</span>
             <span className="hidden md:inline">•</span>
             <span>
-              Ký: Renter {contract.signedByRenter ? "đã ký" : "chưa"} · Staff{" "}
-              {contract.signedByStaff ? "đã ký" : "chưa"}
+              Signed: Renter {contract.signedByRenter ? "yes" : "no"} · Staff{" "}
+              {contract.signedByStaff ? "yes" : "no"}
             </span>
             <span className="hidden md:inline">•</span>
             <span>
-              Cập nhật:{" "}
+              Updated:{" "}
               {new Date(
                 contract.updatedAt || contract.createdAt
-              ).toLocaleString("vi-VN")}
+              ).toLocaleString("en-US")}
             </span>
           </div>
         </div>
@@ -74,3 +64,4 @@ export function RenterContractCard({ contract, renterId, onChanged }: Props) {
     </Card>
   );
 }
+

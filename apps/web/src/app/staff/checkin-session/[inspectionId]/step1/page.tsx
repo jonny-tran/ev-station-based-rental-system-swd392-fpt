@@ -90,16 +90,16 @@ export default function InspectionStep1Page() {
         <SidebarInset>
           <PageHeader
             crumbs={[
-              { label: "Trang chính Staff", href: "/staff" },
-              { label: "Phiên Check-in", href: "/staff/checkin-session" },
-              { label: "Bước 1" },
+              { label: "Staff Home", href: "/staff" },
+              { label: "Check-in Session", href: "/staff/checkin-session" },
+              { label: "Step 1" },
             ]}
           />
           <div className="p-6">
             <div className="flex items-center justify-center py-12">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
               <span className="ml-2 text-muted-foreground">
-                Đang tải thông tin phiên check-in...
+                Loading check-in session information...
               </span>
             </div>
           </div>
@@ -116,22 +116,22 @@ export default function InspectionStep1Page() {
         <SidebarInset>
           <PageHeader
             crumbs={[
-              { label: "Trang chính Staff", href: "/staff" },
-              { label: "Phiên Check-in", href: "/staff/checkin-session" },
-              { label: "Bước 1" },
+              { label: "Staff Home", href: "/staff" },
+              { label: "Check-in Session", href: "/staff/checkin-session" },
+              { label: "Step 1" },
             ]}
           />
           <div className="p-6">
             <div className="flex items-center justify-center py-12">
               <div className="text-center">
                 <div className="text-red-500 text-lg font-semibold mb-2">
-                  Lỗi
+                  Error
                 </div>
                 <div className="text-muted-foreground mb-4">
                   {sessionDetailsError}
                 </div>
                 <Button asChild>
-                  <Link href="/staff/checkin-session">Quay lại danh sách</Link>
+                  <Link href="/staff/checkin-session">Back to List</Link>
                 </Button>
               </div>
             </div>
@@ -149,18 +149,18 @@ export default function InspectionStep1Page() {
         <SidebarInset>
           <PageHeader
             crumbs={[
-              { label: "Trang chính Staff", href: "/staff" },
-              { label: "Phiên Check-in", href: "/staff/checkin-session" },
-              { label: "Bước 1" },
+              { label: "Staff Home", href: "/staff" },
+              { label: "Check-in Session", href: "/staff/checkin-session" },
+              { label: "Step 1" },
             ]}
           />
           <div className="p-6">
             <div className="text-center py-12">
               <div className="text-muted-foreground mb-4">
-                Không tìm thấy phiên check-in với ID: {inspectionId}
+                Check-in session not found with ID: {inspectionId}
               </div>
               <Button asChild variant="outline">
-                <Link href="/staff/checkin-session">Quay lại danh sách</Link>
+                <Link href="/staff/checkin-session">Back to List</Link>
               </Button>
             </div>
           </div>
@@ -175,19 +175,19 @@ export default function InspectionStep1Page() {
       <SidebarInset>
         <PageHeader
           crumbs={[
-            { label: "Trang chính Staff", href: "/staff" },
-            { label: "Phiên Check-in", href: "/staff/checkin-session" },
-            { label: "Bước 1" },
+            { label: "Staff Home", href: "/staff" },
+            { label: "Check-in Session", href: "/staff/checkin-session" },
+            { label: "Step 1" },
           ]}
         />
 
         <div className="flex flex-1 flex-col gap-6 p-6 pt-0">
           <div className="flex items-center gap-3">
             <Button asChild variant="outline">
-              <Link href="/staff/checkin-session">Quay lại</Link>
+              <Link href="/staff/checkin-session">Back</Link>
             </Button>
             <h1 className="text-2xl font-semibold">
-              Bước 1 – Kiểm tra giấy tờ
+              Step 1 – Document Verification
             </h1>
           </div>
 
@@ -230,7 +230,7 @@ export default function InspectionStep1Page() {
               onClick={handleApproveAndContinue}
               disabled={isStepTransitioning}
             >
-              {isStepTransitioning ? "Đang xử lý..." : "Phê duyệt & Tiếp tục"}
+              {isStepTransitioning ? "Processing..." : "Approve & Continue"}
             </Button>
           </div>
         </div>

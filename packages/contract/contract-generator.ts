@@ -33,10 +33,10 @@ export class ContractGenerator {
       "[STAFF_NAME]": data.staffName,
       "[SIGN_DATE_RENTER]": data.signDateRenter
         ? this.formatDate(data.signDateRenter)
-        : "Chưa ký",
+        : "Not signed",
       "[SIGN_DATE_STAFF]": data.signDateStaff
         ? this.formatDate(data.signDateStaff)
-        : "Chưa ký",
+        : "Not signed",
     };
 
     // Replace placeholders
@@ -69,12 +69,12 @@ export class ContractGenerator {
     if (data.renterSignature) {
       html = html.replace(
         "<<SIGN_RENTER>>",
-        '<div class="signature-done">Đã ký</div>'
+        '<div class="signature-done">Signed</div>'
       );
     } else {
       html = html.replace(
         "<<SIGN_RENTER>>",
-        '<div class="signature-placeholder">Chưa ký</div>'
+        '<div class="signature-placeholder">Not signed</div>'
       );
     }
 
@@ -82,12 +82,12 @@ export class ContractGenerator {
     if (data.staffSignature) {
       html = html.replace(
         "<<SIGN_STAFF>>",
-        '<div class="signature-done">Đã ký</div>'
+        '<div class="signature-done">Signed</div>'
       );
     } else {
       html = html.replace(
         "<<SIGN_STAFF>>",
-        '<div class="signature-placeholder">Chưa ký</div>'
+        '<div class="signature-placeholder">Not signed</div>'
       );
     }
 
@@ -95,11 +95,11 @@ export class ContractGenerator {
   }
 
   /**
-   * Format date to Vietnamese format
+   * Format date to standard format
    */
   private formatDate(dateString: string): string {
     const date = new Date(dateString);
-    return date.toLocaleDateString("vi-VN", {
+    return date.toLocaleDateString("en-US", {
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
@@ -107,10 +107,10 @@ export class ContractGenerator {
   }
 
   /**
-   * Format currency to Vietnamese format
+   * Format currency to VND format
    */
   private formatCurrency(amount: number): string {
-    return new Intl.NumberFormat("vi-VN", {
+    return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "VND",
     }).format(amount);

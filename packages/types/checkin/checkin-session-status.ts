@@ -98,15 +98,15 @@ export const CHECKIN_SESSION_STEPS = [
   },
   {
     step: 3,
-    title: "Vehicle Inspection",
-    description: "Inspect vehicle condition before handover",
-    icon: "car",
-  },
-  {
-    step: 4,
     title: "Contract Signing",
     description: "Sign rental agreement",
     icon: "pen-tool",
+  },
+  {
+    step: 4,
+    title: "Payment",
+    description: "Process payment for rental",
+    icon: "credit-card",
   },
   {
     step: 5,

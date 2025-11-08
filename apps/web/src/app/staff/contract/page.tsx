@@ -12,14 +12,14 @@ export default function StaffContractPage() {
       <SidebarInset>
         <PageHeader
           crumbs={[
-            { label: "Trang chính Staff", href: "/staff" },
-            { label: "Hợp đồng" },
+            { label: "Staff Home", href: "/staff" },
+            { label: "Contracts" },
           ]}
         />
 
         <div className="flex flex-1 flex-col gap-6 p-6 pt-0">
           <h1 className="text-3xl font-bold tracking-tight">
-            Hợp đồng (Quản lý hợp đồng thuê xe)
+            Contracts (Electric Vehicle Rental Management)
           </h1>
           <ContractList />
         </div>

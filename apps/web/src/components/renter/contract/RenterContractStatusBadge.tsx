@@ -11,3 +11,4 @@ interface Props {
 export function RenterContractStatusBadge({ status }: Props) {
   return <ContractStatusBadge status={status} />;
 }
+

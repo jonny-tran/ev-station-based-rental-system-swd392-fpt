@@ -6,7 +6,4 @@
 export { AuthService, AuthError } from "./auth.service";
 export { BookingService, BookingError } from "./booking.service";
 export { CheckInSessionService } from "./checkin-session.service";
-
-// Future services can be exported here:
-// export { VehicleService } from './vehicle.service';
-// export { ContractService } from './contract.service';
+export { ContractService } from "./contract.service";

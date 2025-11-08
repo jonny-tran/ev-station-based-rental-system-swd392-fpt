@@ -1,13 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { PageHeader } from "@/components/sidebar/page-header";
-import { mockService } from "@/packages/services/mock-service";
 import { useEffect, useState } from "react";
-import { Contract } from "@/packages/types/contract";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { ContractDataService } from "@/packages/contract/contract-data-service";
@@ -17,57 +14,120 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ContractGenerator } from "@/packages/contract/contract-generator";
 import { CONTRACT_TEMPLATE } from "@/packages/contract/contract-template";
+import { ContractService } from "@/packages/services/contract.service";
+import { ContractApiError } from "@/packages/types/contract/contract-api";
+import { ContractStatus } from "@/packages/types/enum";
+import { useAuthStore } from "@/stores/auth.store";
 
 export default function RenterContractDetailPage() {
   const { contractId } = useParams<{ contractId: string }>();
-  const [contract, setContract] = useState<Contract | undefined>();
+  const router = useRouter();
+  const { user } = useAuthStore();
   const [contractData, setContractData] = useState<ContractData | null>(null);
+  const [contractStatus, setContractStatus] = useState<ContractStatus | null>(
+    null
+  );
+  const [contractBookingId, setContractBookingId] = useState<string>("");
+  const [contractStatusReason, setContractStatusReason] = useState<
+    string | undefined
+  >(undefined);
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    try {
-      setLoading(true);
-      const c = mockService.getContractById(contractId);
-      setContract(c);
-      if (c) {
-        (async () => {
-          const data = await ContractDataService.getContractData("insp-ci-5");
-
-          let renterSignature: string | undefined;
-          let staffSignature: string | undefined;
-          let signDateRenter: string | undefined;
-          let signDateStaff: string | undefined;
-
-          if (c.status === "Completed") {
-            renterSignature = "signed";
-            staffSignature = "signed";
-            signDateRenter = c.signedAt;
-            signDateStaff = c.signedAt;
-          } else if (c.status === "Active") {
-            if (c.signedByRenter) {
-              renterSignature = "signed";
-              signDateRenter = c.signedAt;
-            }
-          }
-
-          setContractData({
-            ...data,
-            contractId: c.contractId,
-            contractCreatedDate: c.createdAt,
-            signDateRenter,
-            signDateStaff,
-            renterSignature,
-            staffSignature,
-          });
-        })();
-      }
-    } catch (err) {
-      setError("Không thể tải thông tin hợp đồng");
-    } finally {
-      setLoading(false);
+    // Redirect if not authenticated or not a renter
+    if (!user || user.role !== "Renter") {
+      router.push("/login");
+      return;
     }
-  }, [contractId]);
+
+    const loadContract = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        if (!contractId || typeof contractId !== "string") {
+          throw new Error("Invalid contract ID");
+        }
+
+        // Get contract details from API
+        const contractResponse =
+          await ContractService.getContractDetails(contractId);
+
+        if (!contractResponse.data) {
+          throw new ContractApiError("Contract not found", 404, undefined);
+        }
+
+        const contractDetails = contractResponse.data;
+        setContractStatus(contractDetails.status);
+        setContractBookingId(contractDetails.bookingId);
+        setContractStatusReason(undefined); // statusReason not in details response
+
+        // Get contract data for rendering
+        let data =
+          await ContractDataService.getContractDataByContractId(contractId);
+
+        // Fallback: Fill in renter info from current user if missing
+        if (user && (data.renterName === "—" || data.renterEmail === "—")) {
+          data = {
+            ...data,
+            renterName: data.renterName === "—" ? user.fullName : data.renterName,
+            renterEmail: data.renterEmail === "—" ? user.email : data.renterEmail,
+            renterPhone:
+              data.renterPhone === "—"
+                ? user.phoneNumber || "—"
+                : data.renterPhone,
+            renterId: data.renterId === "—" ? user.renterId || "—" : data.renterId,
+          };
+        }
+
+        setContractData(data);
+      } catch (err) {
+        const errorMessage =
+          err instanceof ContractApiError
+            ? err.message
+            : err instanceof Error
+              ? err.message
+              : "Unable to load contract information";
+        setError(errorMessage);
+        console.error("Error loading contract:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadContract();
+  }, [contractId, user, router]);
+
+  const handlePrint = async () => {
+    if (!contractData) return;
+    try {
+      const generator = new ContractGenerator(CONTRACT_TEMPLATE);
+      const htmlBody = generator.generateContract(contractData);
+      const html = `<!doctype html><html lang="en"><head><meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <title>Contract ${contractId}</title>
+      </head><body>${htmlBody}</body></html>`;
+      const win = window.open("", "_blank");
+      if (!win) return;
+      win.document.open();
+      win.document.write(html);
+      win.document.close();
+      setTimeout(() => {
+        try {
+          win.focus();
+          win.print();
+        } catch {}
+      }, 300);
+    } catch (err) {
+      console.error("Error printing contract:", err);
+    }
+  };
+
+  // Don't render if user is not a renter
+  if (!user || user.role !== "Renter") {
+    return null;
+  }
 
   return (
     <SidebarProvider>
@@ -75,45 +135,24 @@ export default function RenterContractDetailPage() {
       <SidebarInset>
         <PageHeader
           crumbs={[
-            { label: "Trang chính Renter", href: "/dashboard" },
-            { label: "Hợp đồng", href: "/dashboard/contract" },
-            { label: "Xem chi tiết hợp đồng" },
+            { label: "Home", href: "/dashboard" },
+            { label: "Contracts", href: "/dashboard/contract" },
+            { label: "Contract Details" },
           ]}
         />
 
         <div className="flex flex-1 flex-col gap-6 p-6 pt-0">
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-semibold">Chi tiết hợp đồng</h1>
+            <h1 className="text-2xl font-semibold">Contract Details</h1>
             <div className="flex gap-2">
-              {contract?.status === "Completed" && (
-                <Button
-                  size="sm"
-                  onClick={async () => {
-                    if (!contractData) return;
-                    const generator = new ContractGenerator(CONTRACT_TEMPLATE);
-                    const htmlBody = generator.generateContract(contractData);
-                    const html = `<!doctype html><html lang="vi"><head><meta charset="utf-8" />
-                    <meta name="viewport" content="width=device-width, initial-scale=1" />
-                    <title>${contractId}</title>
-                    </head><body>${htmlBody}</body></html>`;
-                    const win = window.open("", "_blank");
-                    if (!win) return;
-                    win.document.open();
-                    win.document.write(html);
-                    win.document.close();
-                    setTimeout(() => {
-                      try {
-                        win.focus();
-                        win.print();
-                      } catch {}
-                    }, 300);
-                  }}
-                >
-                  In/Tải tài liệu PDF
-                </Button>
-              )}
+              {contractStatus === ContractStatus.Completed &&
+                contractData && (
+                  <Button size="sm" onClick={handlePrint}>
+                    Print/Download PDF
+                  </Button>
+                )}
               <Button asChild variant="outline" size="sm">
-                <Link href="/dashboard/contract">Quay lại</Link>
+                <Link href="/dashboard/contract">Back</Link>
               </Button>
             </div>
           </div>
@@ -127,32 +166,37 @@ export default function RenterContractDetailPage() {
 
           {!error && loading && (
             <div className="border rounded-md p-8 text-center text-muted-foreground">
-              Đang tải nội dung hợp đồng...
+              Loading contract content...
             </div>
           )}
 
-          {!error && contract && contractData && (
+          {!error && !loading && contractData && (
             <div className="space-y-6">
               <div className="text-sm text-muted-foreground">
-                Mã HĐ:{" "}
+                Contract ID:{" "}
                 <span className="font-medium text-foreground">
-                  {contract.contractId}
-                </span>{" "}
-                · Booking: {contract.bookingId}
+                  {contractData.contractId}
+                </span>
+                {contractBookingId && (
+                  <>
+                    {" "}
+                    · Booking: {contractBookingId}
+                  </>
+                )}
               </div>
-              {contract.status === "Completed" && (
+              {contractStatus === ContractStatus.Completed && (
                 <div className="rounded-md border border-green-200 bg-green-50 p-3 text-sm text-green-700">
-                  Hợp đồng đã được ký hoàn tất.
+                  Contract has been fully signed.
                 </div>
               )}
-              {(contract.status === "Voided" ||
-                contract.status === "Terminated") && (
+              {(contractStatus === ContractStatus.Voided ||
+                contractStatus === ContractStatus.Terminated) && (
                 <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-                  Trạng thái:{" "}
-                  {contract.status === "Voided" ? "Hủy" : "Chấm dứt"}
-                  {contract.statusReason
-                    ? ` · Lý do: ${contract.statusReason}`
-                    : ""}
+                  Status:{" "}
+                  {contractStatus === ContractStatus.Voided
+                    ? "Voided"
+                    : "Terminated"}
+                  {contractStatusReason ? ` · Reason: ${contractStatusReason}` : ""}
                 </div>
               )}
               <ContractRenderer contractData={contractData} />
@@ -163,3 +207,4 @@ export default function RenterContractDetailPage() {
     </SidebarProvider>
   );
 }
+

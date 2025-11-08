@@ -2,50 +2,51 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Contract } from "@/packages/types/contract";
-import { ContractStatus } from "@/packages/types/enum";
-import { mockService } from "@/packages/services/mock-service";
+import { ContractListItem } from "@/packages/types/contract/contract-api";
+import { ContractStatus } from "@/packages/types/contract/contract-status";
+import { useContractActions } from "@/stores/contract.store";
 import { useTransition } from "react";
 import { useMemo } from "react";
 
 interface Props {
-  contract: Contract;
-  onChanged?: (updated?: Contract) => void;
+  contract: ContractListItem;
+  onChanged?: () => void;
 }
 
 export function ContractActions({ contract, onChanged }: Props) {
   const [isPending, startTransition] = useTransition();
+  const { staffSignContract } = useContractActions();
 
   const handleStaffSign = () => {
-    startTransition(() => {
-      const updated = mockService.signContractByStaff(contract.contractId);
-      onChanged?.(updated);
+    startTransition(async () => {
+      try {
+        await staffSignContract(contract.contractId);
+        onChanged?.();
+      } catch (error) {
+        console.error("Error signing contract:", error);
+      }
     });
   };
 
   const checkInLink = useMemo(() => {
     if (contract.status !== ContractStatus.Draft) return undefined;
-    // Tìm phiên Check-in liên quan để tiếp tục soạn HĐ (step 3)
-    const insp = mockService.getCheckInSessionByBookingOrContract({
-      bookingId: contract.bookingId,
-      contractId: contract.contractId,
-    });
-    if (!insp) return undefined;
-    return `/staff/checkin-session/${insp.inspectionId}/step3`;
+    // Link to step 3 of check-in session
+    // Note: We need to find the inspection ID from booking ID
+    // For now, return a placeholder link
+    // TODO: Get inspection ID from booking ID
+    return `/staff/checkin-session/${contract.bookingId}/step3`;
   }, [contract]);
 
-  // Refactor: dùng switch để dễ đọc và maintain
+  // Refactor: use switch for better readability and maintainability
   switch (contract.status) {
     case ContractStatus.Draft:
       return checkInLink ? (
         <Button asChild size="sm">
-          <Link href={checkInLink}>Tiếp tục soạn</Link>
+          <Link href={checkInLink}>Continue Editing</Link>
         </Button>
       ) : (
-        <Button asChild size="sm" variant="outline">
-          <Link href={`/staff/contract/${contract.contractId}/detail`}>
-            Xem chi tiết
-          </Link>
+        <Button size="sm" variant="outline" disabled>
+          Draft
         </Button>
       );
 
@@ -53,43 +54,47 @@ export function ContractActions({ contract, onChanged }: Props) {
       if (!contract.signedByRenter) {
         return (
           <Button size="sm" disabled>
-            Đang đợi khách hàng ký
+            Waiting for Renter
           </Button>
         );
       }
       if (contract.signedByRenter && !contract.signedByStaff) {
         return (
           <Button size="sm" onClick={handleStaffSign} disabled={isPending}>
-            Ký kết
+            Sign Contract
           </Button>
         );
       }
       if (contract.signedByRenter && contract.signedByStaff) {
         return (
           <Button size="sm" disabled>
-            Đã ký đủ
+            Fully Signed
           </Button>
         );
       }
       return null;
 
     case ContractStatus.Completed:
+      return (
+        <Button size="sm" variant="outline" disabled>
+          Completed
+        </Button>
+      );
+
     case ContractStatus.Terminated:
     case ContractStatus.Voided:
       return (
-        <Button asChild size="sm" variant="outline">
-          <Link href={`/staff/contract/${contract.contractId}/detail`}>
-            Xem chi tiết
-          </Link>
+        <Button size="sm" variant="outline" disabled>
+          {contract.status === ContractStatus.Terminated
+            ? "Terminated"
+            : "Voided"}
         </Button>
       );
 
     default:
       return (
-        <Button asChild size="sm" variant="secondary">
-          <Link href={`/staff/contract/${contract.contractId}/detail`}>
-            Xem chi tiết
-          </Link>
+        <Button size="sm" variant="secondary" disabled>
+          {contract.status}
         </Button>
       );
   }

@@ -46,12 +46,6 @@ const getStaffNavItems = (pathname: string) => [
     icon: FileText,
     isActive: pathname.startsWith("/staff/contract"),
   },
-  {
-    title: "Quản lý xe trả",
-    url: "/staff/return",
-    icon: Car,
-    isActive: pathname.startsWith("/staff/return"),
-  },
 ];
 
 export function StaffSidebar({

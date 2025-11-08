@@ -496,15 +496,6 @@ export default function ReturnCheckoutDetailPage() {
                       <span className="font-medium">Staff ký:</span>{" "}
                       {contract.signedByStaff ? "✓" : "✗"}
                     </div>
-                    <div className="pt-2">
-                      <Button asChild size="sm" variant="outline">
-                        <Link
-                          href={`/staff/contract/${contract.contractId}/detail`}
-                        >
-                          Xem chi tiết hợp đồng
-                        </Link>
-                      </Button>
-                    </div>
                   </div>
                 </div>
               )}

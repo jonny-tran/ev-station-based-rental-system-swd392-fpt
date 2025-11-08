@@ -71,34 +71,95 @@ apiClient.interceptors.response.use(
     }
 
     // Xử lý các lỗi cụ thể
-    if (error.response?.status === 401) {
-      // Unauthorized - xóa token và redirect về login
-      // Chỉ log warning nếu không phải đang ở trang login (tránh spam khi user nhập sai)
-      if (
-        typeof window !== "undefined" &&
-        window.location.pathname !== "/login"
-      )
-        clearAllTokens();
+    // In development mode, don't auto-redirect to allow debugging
+    const isDevelopment = process.env.NODE_ENV === "development";
+    const disableAutoRedirect = 
+      isDevelopment || 
+      (typeof window !== "undefined" && 
+       (window as any).__DISABLE_API_AUTO_REDIRECT === true);
 
-      // Redirect về trang login nếu đang ở client side và không phải đang ở trang login
-      if (
-        typeof window !== "undefined" &&
-        window.location.pathname !== "/login"
-      ) {
-        window.location.href = "/login";
+    if (error.response?.status === 401) {
+      // Unauthorized - log error for debugging
+      if (typeof window !== "undefined") {
+        const pathname = window.location.pathname;
+        const isLoginPage = pathname === "/login";
+        
+        // Always log in development for debugging
+        if (isDevelopment) {
+          console.error("[API Client] 401 Unauthorized:", {
+            url: error.config?.url,
+            method: error.config?.method,
+            pathname,
+            error: error.response?.data,
+          });
+        }
+
+        // Only clear tokens and redirect if not on login page and auto-redirect is enabled
+        if (!isLoginPage && !disableAutoRedirect) {
+          clearAllTokens();
+          window.location.href = "/login";
+        } else if (!isLoginPage && disableAutoRedirect) {
+          // In debug mode, DON'T clear tokens to allow debugging
+          // Only log the error
+          console.warn(
+            "[API Client] 401 Unauthorized - Auto-redirect disabled. " +
+            "Token NOT cleared to allow debugging. Please handle error in component."
+          );
+        }
       }
     }
 
     // Xử lý lỗi 403 - Forbidden
     if (error.response?.status === 403) {
-      clearAllTokens();
-      window.location.href = "/login";
+      if (isDevelopment) {
+        console.error("[API Client] 403 Forbidden:", {
+          url: error.config?.url,
+          method: error.config?.method,
+          error: error.response?.data,
+          message: error.response?.data?.message || "Access denied",
+        });
+      }
+      
+      if (typeof window !== "undefined") {
+        if (!disableAutoRedirect) {
+          clearAllTokens();
+          window.location.href = "/login";
+        } else {
+          // In debug mode, DON'T clear tokens for 403 errors
+          // 403 usually means role/permission issue, not auth issue
+          console.warn(
+            "[API Client] 403 Forbidden - Auto-redirect disabled. " +
+            "Token NOT cleared (403 is permission issue, not auth issue). " +
+            "Please handle error in component."
+          );
+        }
+      }
     }
 
     // Xử lý lỗi 500 - Internal Server Error
     if (error.response?.status === 500) {
-      clearAllTokens();
-      window.location.href = "/login";
+      if (isDevelopment) {
+        console.error("[API Client] 500 Internal Server Error:", {
+          url: error.config?.url,
+          method: error.config?.method,
+          error: error.response?.data,
+        });
+      }
+      
+      if (typeof window !== "undefined") {
+        if (!disableAutoRedirect) {
+          clearAllTokens();
+          window.location.href = "/login";
+        } else {
+          // In debug mode, DON'T clear tokens for 500 errors
+          // 500 is server error, not auth issue
+          console.warn(
+            "[API Client] 500 Internal Server Error - Auto-redirect disabled. " +
+            "Token NOT cleared (500 is server error, not auth issue). " +
+            "Please handle error in component."
+          );
+        }
+      }
     }
 
     return Promise.reject(error);

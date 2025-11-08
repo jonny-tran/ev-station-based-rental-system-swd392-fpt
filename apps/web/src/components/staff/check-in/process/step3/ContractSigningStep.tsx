@@ -1,14 +1,19 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { ContractRenderer } from "../../../../../../../../packages/contract/ContractRenderer";
 import { RenterInfoPanel } from "./RenterInfoPanel";
 import { ActionButtons } from "./ActionButtons";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, CheckCircle } from "lucide-react";
-import { ContractStatus } from "@/packages/types/contract";
+import { ContractStatus } from "@/packages/types/contract/contract-status";
 import { ContractData } from "../../../../../../../../packages/contract/contract-types";
 import { ContractDataService } from "../../../../../../../../packages/contract/contract-data-service";
+import {
+  useContractDetails,
+  useContractActions,
+} from "@/stores/contract.store";
+import { useState } from "react";
 
 interface RenterInfo {
   fullName: string;
@@ -23,9 +28,28 @@ interface ContractSigningStepProps {
 export function ContractSigningStep({
   inspectionId,
 }: ContractSigningStepProps) {
-  // State management
+  // Contract store hooks
+  const {
+    contractDetails,
+    isLoadingContractDetails,
+    contractDetailsError,
+    loadContractByInspectionId,
+  } = useContractDetails();
+
+  const {
+    submitContract,
+    staffSignContract,
+    rejectContract,
+    approveStep3,
+    getContractStatus,
+    isContractSignedByRenter,
+    isContractSignedByStaff,
+    canStaffSign,
+    canSubmitContract,
+  } = useContractActions();
+
+  // Local state for contract data (for template rendering)
   const [contractData, setContractData] = useState<ContractData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string>("");
 
@@ -36,48 +60,111 @@ export function ContractSigningStep({
     phoneNumber: "",
   });
 
-  // Signature states for display
-  const [status, setStatus] = useState<ContractStatus>(ContractStatus.Draft);
-  const [renterSigned, setRenterSigned] = useState<boolean>(false);
-  const [staffSigned, setStaffSigned] = useState<boolean>(false);
-
-  const loadContractData = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      setError("");
-
-      const data = await ContractDataService.getContractData(inspectionId);
-      setContractData(data);
-      // Mock fetch status from service (here we derive simple state): default Draft
-      setStatus(ContractStatus.Draft);
-      setRenterSigned(Boolean(data.signDateRenter));
-      setStaffSigned(Boolean(data.signDateStaff));
-
-      // Update renter info from contract data
-      setRenterInfo({
-        fullName: data.renterName,
-        email: data.renterEmail,
-        phoneNumber: data.renterPhone,
-      });
-
-      // No local signature simulation/state here
-    } catch (err) {
-      setError("Không thể tải dữ liệu hợp đồng. Vui lòng thử lại.");
-      console.error("Error loading contract data:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [inspectionId]);
-
   // Load contract data on component mount
   useEffect(() => {
-    loadContractData();
-  }, [loadContractData]);
+    const loadData = async () => {
+      try {
+        // Load contract details from store
+        await loadContractByInspectionId(parseInt(inspectionId, 10));
+
+        // Load contract data for template rendering
+        const data = await ContractDataService.getContractData(inspectionId);
+        setContractData(data);
+
+        // Helper function to clean value (remove "—" and trim)
+        const cleanValue = (value: string | undefined | null): string => {
+          if (!value || value.trim() === "" || value.trim() === "—") {
+            return "";
+          }
+          return value.trim();
+        };
+
+        // Update renter info from contract data (prioritize contractData)
+        const renterName = cleanValue(data.renterName);
+        const renterEmail = cleanValue(data.renterEmail);
+        const renterPhone = cleanValue(data.renterPhone);
+
+        // If contractData doesn't have renter info, try from contractDetails
+        if (!renterName && contractDetails?.renter?.fullName) {
+          setRenterInfo({
+            fullName: cleanValue(contractDetails.renter.fullName) || "",
+            email: cleanValue(contractDetails.renter.email) || "",
+            phoneNumber: cleanValue(contractDetails.renter.phoneNumber) || "",
+          });
+        } else {
+          setRenterInfo({
+            fullName: renterName,
+            email: renterEmail,
+            phoneNumber: renterPhone,
+          });
+        }
+      } catch (err) {
+        console.error("Error loading contract data:", err);
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Unable to load contract data. Please try again."
+        );
+      }
+    };
+
+    loadData();
+  }, [inspectionId, loadContractByInspectionId]);
+
+  // Update contract data when contract details change
+  useEffect(() => {
+    const updateContractData = async () => {
+      if (contractDetails) {
+        try {
+          const data = await ContractDataService.getContractData(inspectionId);
+          setContractData(data);
+
+          // Helper function to clean value (remove "—" and trim)
+          const cleanValue = (value: string | undefined | null): string => {
+            if (!value || value.trim() === "" || value.trim() === "—") {
+              return "";
+            }
+            return value.trim();
+          };
+
+          // Update renter info from contract data (prioritize contractData)
+          const renterName = cleanValue(data.renterName);
+          const renterEmail = cleanValue(data.renterEmail);
+          const renterPhone = cleanValue(data.renterPhone);
+
+          // If contractData has valid renter info, use it; otherwise use contractDetails
+          if (renterName || renterEmail || renterPhone) {
+            setRenterInfo({
+              fullName: renterName,
+              email: renterEmail,
+              phoneNumber: renterPhone,
+            });
+          } else if (contractDetails.renter) {
+            setRenterInfo({
+              fullName: cleanValue(contractDetails.renter.fullName) || "",
+              email: cleanValue(contractDetails.renter.email) || "",
+              phoneNumber: cleanValue(contractDetails.renter.phoneNumber) || "",
+            });
+          }
+        } catch (err) {
+          console.error("Error updating contract data:", err);
+        }
+      }
+    };
+
+    updateContractData();
+  }, [contractDetails, inspectionId]);
 
   // Handle contract refresh
-  const handleContractRefresh = useCallback(() => {
-    loadContractData();
-  }, [loadContractData]);
+  const handleContractRefresh = useCallback(async () => {
+    try {
+      await loadContractByInspectionId(parseInt(inspectionId, 10));
+      const data = await ContractDataService.getContractData(inspectionId);
+      setContractData(data);
+    } catch (err) {
+      console.error("Error refreshing contract:", err);
+    }
+  }, [inspectionId, loadContractByInspectionId]);
 
   // Handle renter info change
   const handleRenterInfoChange = useCallback(
@@ -96,81 +183,156 @@ export function ContractSigningStep({
     [contractData]
   );
 
-  // Signature actions removed on this screen
-
-  // Button primary actions based on state
+  // Handle primary action (Submit or Sign)
   const handlePrimary = useCallback(async () => {
-    if (!contractData) return;
+    if (!contractDetails) return;
+
     setIsSubmitting(true);
+    setError("");
+
     try {
-      if (status === ContractStatus.Draft) {
-        await ContractDataService.submitContract(contractData.contractId);
-        setStatus(ContractStatus.Active);
-        console.log("Sent to renter for signing");
+      const status = getContractStatus();
+      const renterSigned = isContractSignedByRenter();
+      const staffSigned = isContractSignedByStaff();
+
+      if (status === ContractStatus.Draft && canSubmitContract()) {
+        // Submit contract for renter signing
+        await submitContract(contractDetails.contractId, {
+          fullName: renterInfo.fullName,
+          email: renterInfo.email,
+          phoneNumber: renterInfo.phoneNumber,
+        });
+
+        // Refresh contract details
+        await loadContractByInspectionId(parseInt(inspectionId, 10));
       } else if (
         status === ContractStatus.Active &&
         renterSigned &&
-        !staffSigned
+        !staffSigned &&
+        canStaffSign()
       ) {
-        // staff signs now
-        setStaffSigned(true);
-        setStatus(ContractStatus.Completed);
-        console.log("Staff signed, contract completed");
+        // Staff signs contract
+        await staffSignContract(contractDetails.contractId);
+
+        // Refresh contract details
+        await loadContractByInspectionId(parseInt(inspectionId, 10));
+
+        // Approve Step 3 (move to Step 4)
+        await approveStep3(parseInt(inspectionId, 10));
       }
-    } catch (error) {
-      console.error("Error processing action:", error);
-      setError("Không thể xử lý. Vui lòng thử lại.");
+    } catch (err) {
+      console.error("Error processing action:", err);
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Unable to process. Please try again."
+      );
     } finally {
       setIsSubmitting(false);
     }
-  }, [contractData, status, renterSigned, staffSigned]);
+  }, [
+    contractDetails,
+    inspectionId,
+    renterInfo,
+    getContractStatus,
+    isContractSignedByRenter,
+    isContractSignedByStaff,
+    canSubmitContract,
+    canStaffSign,
+    submitContract,
+    staffSignContract,
+    approveStep3,
+    loadContractByInspectionId,
+  ]);
 
   // Handle reject
-  const handleReject = useCallback(() => {
-    // In real implementation: update contract status to rejected
-    console.log("Contract rejected");
-  }, []);
+  const handleReject = useCallback(async () => {
+    if (!contractDetails) return;
+
+    const reason = prompt(
+      "Please enter the reason for rejecting the contract:"
+    );
+    if (!reason || reason.trim() === "") return;
+
+    setIsSubmitting(true);
+    setError("");
+
+    try {
+      await rejectContract(contractDetails.contractId, reason.trim());
+
+      // Refresh contract details
+      await loadContractByInspectionId(parseInt(inspectionId, 10));
+    } catch (err) {
+      console.error("Error rejecting contract:", err);
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Unable to reject contract. Please try again."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [
+    contractDetails,
+    inspectionId,
+    loadContractByInspectionId,
+    rejectContract,
+  ]);
 
   // Derive primary button label/disabled
+  const status = getContractStatus();
+  const renterSigned = isContractSignedByRenter();
+  const staffSigned = isContractSignedByStaff();
+
   const primaryLabel =
     status === ContractStatus.Draft
-      ? "Gửi ký kết"
+      ? "Send for Signing"
       : status === ContractStatus.Active
-        ? "Ký kết"
-        : "Đã hoàn tất";
+        ? renterSigned && !staffSigned
+          ? "Sign as Staff"
+          : "Waiting for Renter"
+        : status === ContractStatus.Completed
+          ? "Completed"
+          : "Unknown Status";
+
   const primaryDisabled =
     status === ContractStatus.Draft
-      ? false
+      ? isSubmitting
       : status === ContractStatus.Active
-        ? !renterSigned || isSubmitting
+        ? !renterSigned || staffSigned || isSubmitting
         : true;
 
-  if (isLoading) {
+  // Loading state
+  if (isLoadingContractDetails) {
     return (
       <div className="h-[600px] border rounded-lg flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-gray-500">Đang tải dữ liệu hợp đồng...</p>
+          <p className="text-gray-500">Loading contract data...</p>
         </div>
       </div>
     );
   }
 
-  if (error) {
+  // Error state
+  if (contractDetailsError || error) {
     return (
       <Alert variant="destructive">
         <AlertCircle className="h-4 w-4" />
-        <AlertDescription>{error}</AlertDescription>
+        <AlertDescription>
+          {contractDetailsError || error || "An error occurred"}
+        </AlertDescription>
       </Alert>
     );
   }
 
-  if (!contractData) {
+  // No contract data
+  if (!contractDetails || !contractData) {
     return (
       <Alert>
         <AlertCircle className="h-4 w-4" />
         <AlertDescription>
-          Không tìm thấy dữ liệu hợp đồng. Vui lòng thử lại.
+          Contract data not found. Please try again.
         </AlertDescription>
       </Alert>
     );
@@ -183,11 +345,11 @@ export function ContractSigningStep({
         <CheckCircle className="h-5 w-5 text-green-600" />
         <div>
           <p className="font-medium text-green-800">
-            Hợp đồng đã được tạo tự động
+            Contract has been automatically created
           </p>
           <p className="text-sm text-green-600">
-            Mã hợp đồng: {contractData.contractId} | Tạo lúc:{" "}
-            {new Date(contractData.contractCreatedDate).toLocaleString("vi-VN")}
+            Contract ID: {contractDetails.contractId} | Created at:{" "}
+            {new Date(contractDetails.createdAt).toLocaleString("en-US")}
           </p>
         </div>
       </div>
@@ -206,8 +368,6 @@ export function ContractSigningStep({
           onInfoChange={handleRenterInfoChange}
         />
       </div>
-
-      {/* Signature simulation removed */}
 
       {/* Action Buttons */}
       <ActionButtons

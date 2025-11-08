@@ -25,13 +25,13 @@ export function PaymentMethods({
       {
         value: PaymentMethod.VNPay,
         label: "VNPay",
-        description: "Thanh toán qua cổng VNPay",
+        description: "Pay via VNPay gateway",
         icon: <CreditCard size={18} />,
       },
       {
         value: PaymentMethod.Cash,
-        label: "Tiền mặt",
-        description: "Thanh toán trực tiếp tại quầy",
+        label: "Cash",
+        description: "Pay directly at the counter",
         icon: <Wallet size={18} />,
       },
     ],
@@ -39,7 +39,7 @@ export function PaymentMethods({
   );
 
   const onConfirm = () => {
-    // UI-only: giả lập thành công và chuyển hướng sang result
+    // UI-only: simulate success and redirect to result
     const params = new URLSearchParams();
     params.set("method", method);
     params.set("status", "success");
@@ -67,7 +67,7 @@ export function PaymentMethods({
       </RadioGroup>
 
       <div className="flex items-center justify-end gap-3">
-        <Button onClick={onConfirm}>Xác nhận thanh toán</Button>
+        <Button onClick={onConfirm}>Confirm Payment</Button>
       </div>
     </div>
   );

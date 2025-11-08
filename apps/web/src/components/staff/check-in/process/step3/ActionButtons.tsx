@@ -25,10 +25,10 @@ export function ActionButtons({
         <ConfirmRejectButton
           canReject={true}
           onConfirm={onReject}
-          triggerLabel="Hủy bỏ"
-          confirmTitle="Bạn có chắc chắn muốn hủy bỏ quá trình ký hợp đồng?"
-          cancelLabel="Không"
-          confirmLabel="Có, hủy bỏ"
+          triggerLabel="Cancel"
+          confirmTitle="Are you sure you want to cancel the contract signing process?"
+          cancelLabel="No"
+          confirmLabel="Yes, cancel"
           size="default"
         />
       </div>
@@ -42,7 +42,7 @@ export function ActionButtons({
           {isSubmitting ? (
             <>
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-              Đang xử lý...
+              Processing...
             </>
           ) : (
             <>

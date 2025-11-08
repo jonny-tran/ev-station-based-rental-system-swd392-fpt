@@ -1,13 +1,20 @@
+"use client";
+
+import { useMemo } from "react";
 import { CHECKIN_SESSION_STEPS } from "@/packages/types/checkin";
 
 export function StepIndicator({ current }: { current: 1 | 2 | 3 | 4 | 5 }) {
-  const steps = CHECKIN_SESSION_STEPS.map((step) => step.title);
+  // Use useMemo to ensure consistent rendering between server and client
+  const steps = useMemo(
+    () => CHECKIN_SESSION_STEPS.map((step) => step.title),
+    []
+  );
 
   return (
     <div className="flex items-center gap-3">
       {steps.map((label, index) => (
         <StepItem
-          key={label}
+          key={`${index}-${label}`}
           index={index}
           label={label}
           current={current}

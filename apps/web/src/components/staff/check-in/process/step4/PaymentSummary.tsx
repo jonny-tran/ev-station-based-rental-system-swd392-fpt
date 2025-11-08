@@ -18,7 +18,7 @@ export function PaymentSummary({ contractId }: PaymentSummaryProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Tóm tắt thanh toán</CardTitle>
+        <CardTitle>Payment Summary</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         {payments.map((p) => (
@@ -32,7 +32,7 @@ export function PaymentSummary({ contractId }: PaymentSummaryProps) {
 
         <Separator />
         <div className="flex items-center justify-between">
-          <div className="font-medium">Tổng cần thanh toán</div>
+          <div className="font-medium">Total Amount Due</div>
           <div className="font-semibold">{formatCurrency(total)}</div>
         </div>
       </CardContent>

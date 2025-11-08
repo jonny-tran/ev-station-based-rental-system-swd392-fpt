@@ -25,7 +25,7 @@ export function RenterContractFilters({ value, onChange }: Props) {
     <div className="flex flex-col md:flex-row gap-3">
       <div className="flex-1">
         <Input
-          placeholder="Tìm theo mã HĐ hoặc Booking..."
+          placeholder="Search by contract ID or booking ID..."
           value={value.keyword}
           onChange={(e) => onChange({ ...value, keyword: e.target.value })}
         />
@@ -38,17 +38,18 @@ export function RenterContractFilters({ value, onChange }: Props) {
           }
         >
           <SelectTrigger>
-            <SelectValue placeholder="Trạng thái" />
+            <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="All">Tất cả</SelectItem>
-            <SelectItem value={ContractStatus.Active}>Hiệu lực</SelectItem>
-            <SelectItem value={ContractStatus.Completed}>Hoàn tất</SelectItem>
+            <SelectItem value="All">All</SelectItem>
+            <SelectItem value={ContractStatus.Active}>Active</SelectItem>
+            <SelectItem value={ContractStatus.Completed}>Completed</SelectItem>
             <SelectItem value={ContractStatus.Voided}>Voided</SelectItem>
-            <SelectItem value={ContractStatus.Terminated}>Chấm dứt</SelectItem>
+            <SelectItem value={ContractStatus.Terminated}>Terminated</SelectItem>
           </SelectContent>
         </Select>
       </div>
     </div>
   );
 }
+

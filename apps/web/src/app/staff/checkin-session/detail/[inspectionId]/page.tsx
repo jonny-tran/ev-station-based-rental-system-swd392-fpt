@@ -54,16 +54,16 @@ export default function CheckinSessionDetailPage() {
         <SidebarInset>
           <PageHeader
             crumbs={[
-              { label: "Trang chính Staff", href: "/staff" },
-              { label: "Phiên Check-in", href: "/staff/checkin-session" },
-              { label: "Xem chi tiết" },
+              { label: "Staff Home", href: "/staff" },
+              { label: "Check-in Session", href: "/staff/checkin-session" },
+              { label: "View Details" },
             ]}
           />
           <div className="p-6">
             <div className="flex items-center justify-center py-12">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
               <span className="ml-2 text-muted-foreground">
-                Đang tải thông tin phiên check-in...
+                Loading check-in session information...
               </span>
             </div>
           </div>
@@ -80,18 +80,18 @@ export default function CheckinSessionDetailPage() {
         <SidebarInset>
           <PageHeader
             crumbs={[
-              { label: "Trang chính Staff", href: "/staff" },
-              { label: "Phiên Check-in", href: "/staff/checkin-session" },
-              { label: "Xem chi tiết" },
+              { label: "Staff Home", href: "/staff" },
+              { label: "Check-in Session", href: "/staff/checkin-session" },
+              { label: "View Details" },
             ]}
           />
           <div className="p-6">
             <div className="text-center py-12">
               <div className="text-muted-foreground mb-4">
-                Không tìm thấy phiên check-in với ID: {inspectionId}
+                Check-in session not found with ID: {inspectionId}
               </div>
               <Button asChild variant="outline">
-                <Link href="/staff/checkin-session">Quay lại danh sách</Link>
+                <Link href="/staff/checkin-session">Back to List</Link>
               </Button>
             </div>
           </div>
@@ -116,82 +116,82 @@ export default function CheckinSessionDetailPage() {
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <Button asChild variant="outline">
-                <Link href="/staff/checkin-session">Quay lại</Link>
+                <Link href="/staff/checkin-session">Back</Link>
               </Button>
               <h1 className="text-2xl font-semibold">
-                Tổng quan phiên Check-in
+                Check-in Session Overview
               </h1>
             </div>
             <InspectionStatusBadge status={session.status} />
           </div>
 
-          {/* Thông tin lý do bị hủy */}
+          {/* Rejection Reason */}
           {isRejected && (
             <Card className="border-red-200 bg-red-50">
               <CardHeader>
-                <CardTitle className="text-red-700">Lý do bị hủy</CardTitle>
+                <CardTitle className="text-red-700">Rejection Reason</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-red-700">
-                  Phiên check-in đã bị từ chối
+                  Check-in session has been rejected
                 </p>
               </CardContent>
             </Card>
           )}
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            {/* Thông tin khách thuê */}
+            {/* Renter Information */}
             <Card>
               <CardHeader>
-                <CardTitle>Thông tin khách thuê</CardTitle>
+                <CardTitle>Renter Information</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                <InfoRow label="Họ tên" value={session.renter.fullName} />
-                <InfoRow label="CCCD" value={session.renter.identityNumber} />
+                <InfoRow label="Full Name" value={session.renter.fullName} />
+                <InfoRow label="ID Number" value={session.renter.identityNumber} />
               </CardContent>
             </Card>
 
-            {/* Thông tin xe */}
+            {/* Vehicle Information */}
             <Card>
               <CardHeader>
-                <CardTitle>Thông tin xe</CardTitle>
+                <CardTitle>Vehicle Information</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                <InfoRow label="Biển số" value={session.vehicle.licensePlate} />
+                <InfoRow label="License Plate" value={session.vehicle.licensePlate} />
                 <InfoRow
-                  label="Mẫu xe"
+                  label="Vehicle Model"
                   value={`${session.vehicle.brand} ${session.vehicle.model}`}
                 />
               </CardContent>
             </Card>
 
-            {/* Thông tin booking */}
+            {/* Booking Information */}
             <Card>
               <CardHeader>
-                <CardTitle>Thông tin booking</CardTitle>
+                <CardTitle>Booking Information</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
                 <InfoRow label="Booking ID" value={session.booking.bookingId} />
                 <InfoRow
-                  label="Thời gian bắt đầu"
+                  label="Start Time"
                   value={toLocal(session.booking.startTime)}
                 />
                 <InfoRow
-                  label="Thời gian kết thúc"
+                  label="End Time"
                   value={toLocal(session.booking.endTime)}
                 />
-                <InfoRow label="Trạng thái" value={session.booking.status} />
+                <InfoRow label="Status" value={session.booking.status} />
                 <InfoRow
-                  label="Tiền cọc"
+                  label="Deposit Amount"
                   value={`${session.booking.depositAmount.toLocaleString("vi-VN")} VNĐ`}
                 />
               </CardContent>
             </Card>
 
-            {/* Thông tin phiên check-in */}
+            {/* Check-in Session Information */}
             <Card>
               <CardHeader>
-                <CardTitle>Thông tin phiên check-in</CardTitle>
+                <CardTitle>Check-in Session Information</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
                 <InfoRow
@@ -199,10 +199,10 @@ export default function CheckinSessionDetailPage() {
                   value={session.inspectionId.toString()}
                 />
                 <InfoRow
-                  label="Bước hiện tại"
-                  value={`Bước ${session.currentStep}`}
+                  label="Current Step"
+                  value={`Step ${session.currentStep}`}
                 />
-                <InfoRow label="Trạng thái" value={session.status} />
+                <InfoRow label="Status" value={session.status} />
               </CardContent>
             </Card>
           </div>

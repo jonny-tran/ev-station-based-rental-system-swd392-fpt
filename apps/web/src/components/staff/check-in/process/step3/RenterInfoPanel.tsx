@@ -46,7 +46,7 @@ export function RenterInfoPanel({
     <Card className="h-fit">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg">Thông tin Renter</CardTitle>
+          <CardTitle className="text-lg">Renter Information</CardTitle>
           {!isEditing ? (
             <Button
               variant="outline"
@@ -54,17 +54,17 @@ export function RenterInfoPanel({
               onClick={() => setIsEditing(true)}
             >
               <Edit2 className="h-4 w-4 mr-2" />
-              Chỉnh sửa
+              Edit
             </Button>
           ) : (
             <div className="flex gap-2">
               <Button variant="outline" size="sm" onClick={handleCancel}>
                 <X className="h-4 w-4 mr-2" />
-                Hủy
+                Cancel
               </Button>
               <Button size="sm" onClick={handleSave}>
                 <Save className="h-4 w-4 mr-2" />
-                Lưu
+                Save
               </Button>
             </div>
           )}
@@ -72,7 +72,7 @@ export function RenterInfoPanel({
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="fullName">Họ và tên</Label>
+          <Label htmlFor="fullName">Full Name</Label>
           <Input
             id="fullName"
             value={isEditing ? editedInfo.fullName : renterInfo.fullName}
@@ -95,7 +95,7 @@ export function RenterInfoPanel({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="phoneNumber">Số điện thoại</Label>
+          <Label htmlFor="phoneNumber">Phone Number</Label>
           <Input
             id="phoneNumber"
             value={isEditing ? editedInfo.phoneNumber : renterInfo.phoneNumber}
@@ -107,8 +107,8 @@ export function RenterInfoPanel({
 
         {!isEditing && (
           <div className="pt-2 text-xs text-gray-500">
-            <p>• Click &quot;Chỉnh sửa&quot; để thay đổi thông tin</p>
-            <p>• Thông tin này sẽ được sử dụng để gửi thông báo ký hợp đồng</p>
+            <p>• Click &quot;Edit&quot; to change information</p>
+            <p>• This information will be used to send contract signing notifications</p>
           </div>
         )}
       </CardContent>

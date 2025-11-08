@@ -16,13 +16,13 @@ export default function InspectionStep3Page() {
       <SidebarInset>
         <PageHeader
           crumbs={[
-            { label: "Trang chính Staff", href: "/staff" },
-            { label: "Phiên Check-in", href: "/staff/checkin-session" },
-            { label: "Bước 3" },
+            { label: "Staff Home", href: "/staff" },
+            { label: "Check-in Session", href: "/staff/checkin-session" },
+            { label: "Step 3" },
           ]}
         />
         <div className="flex flex-1 flex-col gap-6 p-6 pt-0">
-          <h1 className="text-2xl font-semibold">Bước 3 – Ký hợp đồng</h1>
+          <h1 className="text-2xl font-semibold">Step 3 – Contract Signing</h1>
 
           <StepIndicator current={3} />
 
